@@ -1,4 +1,4 @@
-# Memory-Mitra — AI Cognitive Gaming & Memory Assistance Platform
+# Smriti — AI Cognitive Gaming & Memory Assistance Platform
 
 AI-powered cognitive gaming and memory assistance platform for elderly dementia patients in the North Eastern Region (NER). Built for CodeSpecs — prototype demo on September 1.
 
@@ -17,7 +17,7 @@ Elderly dementia patients in NER face limited access to cognitive therapy and sp
 ## Project Structure
 
 ```
-ner-dementia-care/
+smriti/
 ├── backend/          # FastAPI app
 │   ├── main.py
 │   ├── routers/      # auth, patients, reminders, games, dashboard
@@ -67,13 +67,13 @@ Runs on `http://localhost:3000`
 ## Team
 
 | Member | Role |
-|---|---|
-| AJ (Lead) | Architecture, integration, ML adaptive-difficulty logic |
-| Member 2 | Frontend — UI shell, Games 1 & 2, caregiver dashboard UI |
-| Member 3 | Frontend — Game 3, reminders UI, dashboard alerts |
-| Member 4 | Backend — data models, reminders API, offline sync |
-| Member 5 | Voice interaction, regional language, theming |
-| Member 6 | Pitch deck & presentation |
+|--------|------|
+| Atishay Jain (Lead) | Architecture, integration, ML adaptive-difficulty logic |
+| Ankit Chaurasia | Backend — data models, reminders API, offline sync |
+| Riddhima Agarwal | Frontend — UI shell, Games 1 & 2, caregiver dashboard UI |
+| Shreya Srivastava | Frontend — Game 3, reminders UI, dashboard alerts |
+| Vansh Jain | Voice interaction, regional language, theming |
+| Aryan Gupta | Pitch deck & presentation |
 
 ## Branching
 
