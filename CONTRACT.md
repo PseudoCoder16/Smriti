@@ -1,168 +1,125 @@
-# API Contract — v1
+# API Contract — v2
 
-This is the agreed shape of every backend endpoint. Frontend can build against these shapes (using hardcoded mock JSON matching this exact structure) before the backend is finished — swap in the real call later with zero rework. Any change to this contract must be communicated to the whole team before code is written against it.
+This is the agreed shape of every backend endpoint. Frontend can build against these shapes before the backend is finished — swap in the real call later with zero rework. Any change to this contract must be communicated to the whole team before code is written against it.
 
 Base URL (local dev): `http://localhost:8000`
+
+Auth: every caregiver-only endpoint below requires `Authorization: Bearer <token>` (token returned by `/login/caregiver` or `/register/caregiver`). Patient endpoints don't need this for the prototype.
 
 ---
 
 ## Auth
 
-### `POST /auth/patient-login`
-Patient taps their profile icon to enter — no password.
+### `POST /login/patient`
+**Request** `{ "username": "string", "pin": "string" }`
+**Response** `{ "success": true, "patient_id": "string", "name": "string" }`
 
-**Request**
-```json
-{ "patient_id": "string" }
-```
-**Response**
-```json
-{ "success": true, "patient_id": "string", "name": "string" }
-```
+### `POST /login/caregiver`
+**Request** `{ "email": "string", "password": "string" }`
+**Response** `{ "success": true, "token": "jwt_string", "caregiver_id": "string" }`
 
-### `POST /auth/caregiver-login`
-**Request**
-```json
-{ "email": "string", "password": "string" }
-```
-**Response**
-```json
-{ "success": true, "token": "jwt_string", "caregiver_id": "string" }
-```
+### `POST /register/patient` *(caregiver-authenticated)*
+Used by the caregiver dashboard's "+ Add Patient" flow. Sets `caregiver_id` to the logged-in caregiver.
+**Request** `{ "name", "age", "gender", "language", "username", "pin", "photo_base64"? }`
+**Response** `{ "success": true, "patient_id": "string", "name": "string" }`
 
----
+### `POST /register/patient/self`
+Public — an elderly patient self-registering from the Auth screen. `caregiver_id` is left unset; a caregiver links/claims the patient later.
+**Request** same shape as above
+**Response** same shape as above
 
-## Patients
-
-### `POST /patients`
-Caregiver creates a patient profile.
-
-**Request**
-```json
-{ "name": "string", "language": "string", "photo_url": "string", "caregiver_id": "string" }
-```
-**Response**
-```json
-{ "patient_id": "string", "name": "string", "language": "string", "photo_url": "string" }
-```
-
-### `GET /patients/{id}`
-**Response**
-```json
-{
-  "patient_id": "string",
-  "name": "string",
-  "language": "string",
-  "photo_url": "string",
-  "difficulty_level": 1
-}
-```
+### `POST /register/caregiver`
+**Request** `{ "name", "email", "phone", "password", "photo_base64"? }`
+**Response** `{ "success": true, "token": "jwt_string", "caregiver_id": "string" }`
 
 ---
 
-## Reminders
+## Patient
 
-### `POST /reminders`
-**Request**
-```json
-{
-  "patient_id": "string",
-  "type": "medicine | hydration | activity | appointment",
-  "title": "string",
-  "time": "2026-09-01T09:00:00Z"
-}
-```
+### `GET /patient` *(caregiver-authenticated)*
+Lists the patients belonging to the logged-in caregiver — powers the dashboard's patient picker and the add-patient flow.
+**Response** `{ "patients": [ { "patient_id", "name", "age", "gender", "language", "username", "photo_base64" } ] }`
+
+### `GET /patient/{id}`
+**Response** `{ "patient_id", "name", "age", "gender", "language", "username", "photo_base64" }`
+
+### `GET /patient/{id}/games?limit=30`
 **Response**
 ```json
-{ "reminder_id": "string", "status": "created" }
+{ "sessions": [
+  { "session_id", "game_type", "difficulty", "score", "correct", "errors", "avg_response_ms", "timestamp" }
+]}
 ```
 
-### `GET /reminders/{patient_id}`
+### `GET /patient/{id}/performance?days=7`
 **Response**
 ```json
 {
-  "reminders": [
-    {
-      "reminder_id": "string",
-      "type": "medicine",
-      "title": "string",
-      "time": "2026-09-01T09:00:00Z",
-      "completed": false
-    }
+  "games_completed": 12,
+  "accuracy_pct": 82.5,
+  "error_rate_pct": 17.5,
+  "avg_response_ms": 1450.2,
+  "trend": [
+    { "date": "2026-08-29", "games_completed": 3, "accuracy_pct": 80, "error_rate_pct": 20, "avg_response_ms": 1500 }
   ]
 }
 ```
 
 ---
 
-## Game Sessions
+## Game
 
-### `POST /game-sessions`
-Called every time a patient finishes a game.
-
+### `POST /game/result`
 **Request**
 ```json
-{
-  "patient_id": "string",
-  "game_type": "memory_match | pattern_recognition | routine_recall",
-  "score": 8,
-  "difficulty": 2,
-  "duration_seconds": 95
-}
+{ "patient_id", "game_type": "memory_match | pattern_recognition | routine_recall | tea_sorting | rhythm_tap",
+  "difficulty": "easy | medium | hard", "score": 80, "correct": 8, "errors": 2, "avg_response_ms": 3800 }
 ```
-**Response**
-```json
-{ "session_id": "string", "new_difficulty": 3 }
-```
-
-### `GET /game-sessions/{patient_id}`
-**Response**
-```json
-{
-  "sessions": [
-    {
-      "game_type": "memory_match",
-      "score": 8,
-      "difficulty": 2,
-      "timestamp": "2026-09-01T09:15:00Z"
-    }
-  ]
-}
-```
+**Response** `{ "session_id": "string", "status": "recorded" }`
 
 ---
 
-## Dashboard
+## Medicine
 
-### `GET /dashboard/{patient_id}`
-Single endpoint that aggregates everything the caregiver dashboard needs.
+### `GET /medicine/{patient_id}`
+**Response** `{ "medicine": [ { "medicine_id", "patient_id", "name", "time", "frequency", "status": "taken | pending" } ] }`
 
-**Response**
-```json
-{
-  "patient_name": "string",
-  "last_active": "2026-09-01T09:15:00Z",
-  "games_today": 3,
-  "avg_score_trend": [
-    { "date": "2026-08-29", "score": 6 },
-    { "date": "2026-08-30", "score": 7 }
-  ],
-  "reminder_compliance_pct": 85,
-  "alerts": [
-    {
-      "type": "missed_reminder | low_activity | low_mood",
-      "message": "string",
-      "timestamp": "2026-09-01T09:00:00Z"
-    }
-  ]
-}
-```
+### `POST /medicine` *(caregiver-authenticated)*
+**Request** `{ "patient_id", "name", "time", "frequency" }` → created with `status: "pending"`
+**Response** single medicine object
+
+### `PUT /medicine/{id}`
+**Request** any of `{ "status"?, "name"?, "time"?, "frequency"? }`
+**Response** updated medicine object
+
+---
+
+## Messages
+
+### `GET /messages/{patient_id}`
+**Response** `{ "messages": [ { "message_id", "patient_id", "text", "timestamp" } ] }`
+
+### `POST /message` *(caregiver-authenticated)*
+**Request** `{ "patient_id", "text" }`
+**Response** single message object
+
+---
+
+## Check-in
+
+### `POST /checkin`
+**Request** `{ "patient_id", "mood": "Happy | Okay | Sad | Tired" }`
+**Response** single checkin object
+
+### `GET /checkin/{patient_id}?limit=30`
+**Response** `{ "checkins": [ { "checkin_id", "patient_id", "mood", "timestamp" } ] }`
 
 ---
 
 ## Notes
 
-- All timestamps: ISO 8601 format
-- All `{id}` / `{patient_id}` path params: MongoDB ObjectId as string
-- Auth: caregiver endpoints (except login) should require the `token` in an `Authorization: Bearer <token>` header — patient endpoints don't need this for the prototype
+- All timestamps: ISO 8601 (UTC)
+- `{id}` path params other than `patient_id`/`caregiver_id` are MongoDB ObjectId strings
+- Alerts (medicine pending, performance decline, no activity today) are **not** a dedicated endpoint — the caregiver dashboard computes them client-side from `/medicine`, `/patient/{id}/performance`, and `/patient/{id}/games`
+- Forgot-password/PIN reset has no backend endpoint yet — frontend keeps a local-only mock flow
 - If a new field is needed mid-sprint, add it here first and message the team before changing backend/frontend code

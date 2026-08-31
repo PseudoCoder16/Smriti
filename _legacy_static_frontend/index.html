@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel=stylesheet href="style.css"/>
+<title>Smriti — AI Cognitive Care Platform for NER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+<!-- ============ LANDING PAGE ============ -->
+<section class="screen active" id="screen-landing" data-screen="landing">
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="mark">
+          <svg width="36" height="36" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="#16302A"/>
+            <circle cx="20" cy="15" r="5.5" fill="#F1C978"/>
+            <path d="M-1 26 Q9 15 18 26 Q23 18 29 26 Q34 20 41 26 L41 40 L-1 40 Z" fill="#0F231C" opacity=".6"/>
+            <path d="M-1 30 Q10 21 19 30 Q25 23 31 30 Q36 25 41 30 L41 41 L-1 41 Z" fill="#0B1B15"/>
+          </svg>
+        </span>
+        <span class="serif">Smriti</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features-sec">Features</a>
+        <a href="#games-sec">Games</a>
+        <a href="#about-sec">About</a>
+      </div>
+      <button class="btn btn-primary" id="btn-nav-login">Login / Register</button>
+    </div>
+  </nav>
+
+  <section style="padding:54px 0 6px;text-align:center;">
+    <div class="fancy-wordmark">smriti</div>
+    <p style="color:var(--ink-soft);font-size:.95rem;margin-top:8px;letter-spacing:.02em;">memory, made gentle</p>
+  </section>
+
+  <section class="section" id="games-sec" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker">Inside the platform</div>
+        <h2>Five cognitive games, one gentle routine</h2>
+        <p>Each game targets a different cognitive domain — memory, attention, sequencing, discrimination and motor timing.</p>
+      </div>
+      <div class="games-strip">
+        <button class="card game-chip-card" data-go="memory-match"><div class="em">🃏</div><h4>Memory Match</h4><p>Recall & pairing</p></button>
+        <button class="card game-chip-card" data-go="pattern-game"><div class="em">🔷</div><h4>Pattern Recognition</h4><p>Attention & focus</p></button>
+        <button class="card game-chip-card" data-go="daily-routine"><div class="em">🪥</div><h4>Daily Routine Recall</h4><p>Sequencing memory</p></button>
+        <button class="card game-chip-card" data-go="tea-sorting"><div class="em">🍃</div><h4>Tea Leaf Sorting</h4><p>Visual discrimination</p></button>
+        <button class="card game-chip-card" data-go="rhythm-tap"><div class="em">🥁</div><h4>Rhythm & Tap</h4><p>Auditory & motor timing</p></button>
+      </div>
+      <p style="text-align:center;color:var(--ink-faint);font-size:.82rem;margin-top:18px;">Tap any game to try it right away — no login needed for a quick demo.</p>
+    </div>
+  </section>
+
+  <section class="section" id="features-sec">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker">Why Smriti</div>
+        <h2>Designed around the patient, built for the caregiver</h2>
+        <p>Every module is tuned for accessibility in remote, low-connectivity NER households — without compromising on clinical usefulness.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="card feature-card"><div class="ico">🧠</div><h3>AI-adaptive difficulty</h3></div>
+        <div class="card feature-card"><div class="ico">🗣️</div><h3>Multilingual voice guidance</h3></div>
+        <div class="card feature-card"><div class="ico">🎋</div><h3>Culturally rooted themes</h3></div>
+        <div class="card feature-card"><div class="ico">📈</div><h3>Caregiver dashboard</h3></div>
+        <div class="card feature-card"><div class="ico">📶</div><h3>Offline-first sync</h3></div>
+        <div class="card feature-card"><div class="ico">🔒</div><h3>Secure patient data</h3></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about-sec" style="padding-top:0;">
+    <div class="cta-band">
+      <div>
+        <h2>Ready to try it with a patient or as a caregiver?</h2>
+        <p>No installation needed — works right in the browser, even on shared family devices.</p>
+      </div>
+      <button class="btn btn-accent btn-lg" id="btn-cta-start">Get Started</button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="nav-brand">
+          <span class="mark">
+            <svg width="36" height="36" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="20" fill="#16302A"/>
+              <circle cx="20" cy="15" r="5.5" fill="#F1C978"/>
+              <path d="M-1 26 Q9 15 18 26 Q23 18 29 26 Q34 20 41 26 L41 40 L-1 40 Z" fill="#0F231C" opacity=".6"/>
+              <path d="M-1 30 Q10 21 19 30 Q25 23 31 30 Q36 25 41 30 L41 41 L-1 41 Z" fill="#0B1B15"/>
+            </svg>
+          </span>
+          <span class="serif">Smriti</span>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col"><h5>Product</h5><a href="#features-sec">Features</a><a href="#games-sec">Games</a><a href="#" id="footer-caregiver-link">Caregiver Login</a></div>
+        <div class="footer-col"><h5>Platform</h5><a href="#">Offline mode</a><a href="#">Data privacy</a><a href="#">Accessibility</a></div>
+      </div>
+    </div>
+    <div class="container footer-bottom">© 2026 Smriti.</div>
+  </footer>
+</section>
+
+<!-- ============ AUTH: LOGIN / REGISTER ============ -->
+<section class="screen" id="screen-auth" data-screen="auth">
+  <div class="auth-topnav">
+    <div class="nav-brand">
+      <span class="mark">
+        <svg width="36" height="36" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="#16302A"/>
+          <circle cx="20" cy="15" r="5.5" fill="#F1C978"/>
+          <path d="M-1 26 Q9 15 18 26 Q23 18 29 26 Q34 20 41 26 L41 40 L-1 40 Z" fill="#0F231C" opacity=".6"/>
+          <path d="M-1 30 Q10 21 19 30 Q25 23 31 30 Q36 25 41 30 L41 41 L-1 41 Z" fill="#0B1B15"/>
+        </svg>
+      </span>
+      <span class="serif">Smriti</span>
+    </div>
+    <button class="btn btn-ghost" data-go="landing">← Back to home</button>
+  </div>
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <h2 id="auth-heading">Welcome back</h2>
+      <p class="sub" id="auth-sub">Log in to continue to your cognitive care space.</p>
+
+      <div id="auth-switcher">
+        <div class="tab-row">
+          <button class="active" data-tab="login">Login</button>
+          <button data-tab="register">Register</button>
+        </div>
+        <div class="role-row">
+          <div class="role-chip active" data-role="patient"><span class="r-em">🧓</span>Patient</div>
+          <div class="role-chip" data-role="caregiver"><span class="r-em">🧑‍⚕️</span>Caregiver</div>
+        </div>
+      </div>
+
+      <!-- patient login -->
+      <form id="auth-patient-login" style="display:none;">
+        <div class="field"><label>Patient ID / Username</label><input type="text" id="login-p-username" placeholder="e.g. dipali01" required></div>
+        <div class="field"><label>PIN / Password</label><input type="password" id="login-p-pin" placeholder="4-digit PIN or password" required></div>
+        <span class="forgot-link" data-forgot="patient">Forgot PIN?</span>
+        <div class="error-text" id="login-p-error"></div>
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        <div class="demo-hint">Demo accounts: usernames <b>dipali01</b>, <b>temjen01</b>, <b>lalrin01</b>, <b>ibemhal01</b> — PIN <b>1234</b>.</div>
+      </form>
+
+      <!-- patient register -->
+      <form id="auth-patient-register" style="display:none;">
+        <div class="field"><label>Full name</label><input type="text" id="reg-p-name" placeholder="e.g. Ronen Gogoi" required></div>
+        <div class="field"><label>Age</label><input type="number" id="reg-p-age" placeholder="e.g. 70" min="40" max="110" required></div>
+        <div class="field"><label>Gender</label>
+          <select id="reg-p-gender"><option>Female</option><option>Male</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>Preferred language</label>
+          <select id="reg-p-lang">
+            <option>English</option><option>Assamese</option><option>Bodo</option><option>Khasi</option><option>Mizo</option>
+            <option>Ao Naga</option><option>Manipuri</option><option>Nepali</option><option>Hindi</option>
+          </select>
+        </div>
+        <div class="field"><label>Patient ID / Username</label><input type="text" id="reg-p-username" placeholder="choose a username" required></div>
+        <div class="field"><label>Password / 4-digit PIN</label><input type="password" id="reg-p-pin" placeholder="e.g. 1234" required></div>
+        <div class="field"><label>Profile photo (optional)</label><input type="file" id="reg-p-photo" accept="image/*"></div>
+        <div class="error-text" id="reg-p-error"></div>
+        <button type="submit" class="btn btn-primary btn-block">Create profile & continue</button>
+      </form>
+
+      <!-- caregiver login -->
+      <form id="auth-caregiver-login" style="display:none;">
+        <div class="field"><label>Email / Phone</label><input type="text" id="cg-login-email" placeholder="you@example.com" required></div>
+        <div class="field"><label>Password</label><input type="password" id="cg-login-pass" placeholder="••••••••" required></div>
+        <span class="forgot-link" data-forgot="caregiver">Forgot Password?</span>
+        <div class="error-text" id="cg-login-error"></div>
+        <button type="submit" class="btn btn-primary btn-block">Log in to dashboard</button>
+        <div class="demo-hint">Demo caregiver: <b>demo@smriti.care</b> — password <b>demo123</b>.</div>
+      </form>
+
+      <!-- caregiver register -->
+      <form id="auth-caregiver-register" style="display:none;">
+        <div class="field"><label>Full name</label><input type="text" id="cg-reg-name" placeholder="e.g. Dr. Mary Lyngdoh" required></div>
+        <div class="field"><label>Email</label><input type="email" id="cg-reg-email" placeholder="you@example.com" required></div>
+        <div class="field"><label>Phone number</label><input type="tel" id="cg-reg-phone" placeholder="e.g. 98765 43210" required></div>
+        <div class="field"><label>Password</label><input type="password" id="cg-reg-pass" placeholder="Create a password" required></div>
+        <div class="field"><label>Profile photo (optional)</label><input type="file" id="cg-reg-photo" accept="image/*"></div>
+        <div class="error-text" id="cg-reg-error"></div>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+      </form>
+
+      <!-- forgot password / pin mock flow -->
+      <div id="auth-forgot" style="display:none;">
+        <p class="sub" id="forgot-sub">Enter your registered email or phone to receive an OTP.</p>
+        <div id="forgot-step1">
+          <div class="field"><label id="forgot-id-label">Email / Phone</label><input type="text" id="forgot-identifier" placeholder=""></div>
+          <button type="button" class="btn btn-primary btn-block" id="forgot-send-otp">Send OTP</button>
+        </div>
+        <div id="forgot-step2" style="display:none;">
+          <div class="field"><label>Enter OTP</label><input type="text" id="forgot-otp" placeholder="4–6 digit code" maxlength="6"></div>
+          <div class="field"><label id="forgot-newpass-label">New Password</label><input type="text" id="forgot-newpass" placeholder=""></div>
+          <div class="error-text" id="forgot-error"></div>
+          <button type="button" class="btn btn-primary btn-block" id="forgot-submit">Reset & Continue</button>
+        </div>
+        <div class="auth-alt"><b id="forgot-back">← Back to login</b></div>
+      </div>
+
+      <div class="auth-alt" id="auth-alt-text">New here? <b data-switch-tab="register">Register instead</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PATIENT DASHBOARD ============ -->
+<section class="screen" id="screen-home" data-screen="home">
+  <div class="patient-topbar">
+    <div class="patient-chip" id="home-patient-chip"></div>
+    <button class="btn btn-ghost" id="btn-logout-home">Switch user</button>
+  </div>
+  <div class="home-greet">
+    <h1 id="home-greeting">Good morning 👋</h1>
+    <p id="home-checkin-msg">How are you feeling today?</p>
+  </div>
+  <div class="home-tiles">
+    <button class="home-tile" data-go="game-select"><div class="emoji">🎮</div><div class="label">Play Today</div></button>
+    <button class="home-tile" data-go="reminders"><div class="emoji">💊</div><div class="label">Medicine</div></button>
+    <button class="home-tile" data-go="messages"><div class="emoji">💬</div><div class="label">Caregiver Message</div></button>
+    <button class="home-tile" data-go="mood"><div class="emoji">❤️</div><div class="label">Check-in</div></button>
+    <button class="home-tile" data-go="progress"><div class="emoji">🏆</div><div class="label">My Progress</div></button>
+  </div>
+</section>
+
+<!-- ============ GAME SELECT ============ -->
+<section class="screen" id="screen-game-select" data-screen="game-select">
+  <div class="patient-topbar"><button class="home-btn" data-go="home">🏠</button><div id="chip-slot-1"></div></div>
+  <div class="section-heading">Choose a game</div>
+  <div class="game-cards">
+    <button class="game-card" data-go="memory-match"><div class="banner">🃏</div><div class="body"><h3>Memory Match</h3><p>Flip the cards and find matching pairs.</p></div></button>
+    <button class="game-card" data-go="pattern-game"><div class="banner">🔷</div><div class="body"><h3>Pattern Recognition</h3><p>Watch the sequence, then tap it back.</p></div></button>
+    <button class="game-card" data-go="daily-routine"><div class="banner">🪥</div><div class="body"><h3>Daily Routine Recall</h3><p>Arrange the day's activities in order.</p></div></button>
+    <button class="game-card" data-go="tea-sorting"><div class="banner">🍃</div><div class="body"><h3>Tea Leaf Sorting</h3><p>Sort fresh green leaves from dry brown ones.</p></div></button>
+    <button class="game-card" data-go="rhythm-tap"><div class="banner">🥁</div><div class="body"><h3>Rhythm & Tap</h3><p>Tap along to the folk drum beat.</p></div></button>
+  </div>
+</section>
+
+<!-- ============ MEMORY MATCH ============ -->
+<section class="screen" id="screen-memory-match" data-screen="memory-match">
+  <div class="game-header"><button class="home-btn" data-go="game-select">⬅️</button><div class="score-pill" id="mm-score">Round 0 / 5</div></div>
+  <div class="game-body">
+    <div class="game-title">Memory Match</div>
+    <div class="game-sub">Flip two cards at a time and find every matching pair.</div>
+
+    <div class="phase-panel" id="mm-diff-phase">
+      <p class="phase-label">Choose a difficulty to begin</p>
+      <div class="diff-btns">
+        <button class="diff-btn" data-prefix="mm" data-diff="easy">Easy<span>4 pairs</span></button>
+        <button class="diff-btn" data-prefix="mm" data-diff="medium">Medium<span>6 pairs</span></button>
+        <button class="diff-btn" data-prefix="mm" data-diff="hard">Hard<span>8 pairs</span></button>
+      </div>
+    </div>
+    <div class="phase-panel" id="mm-play-phase" style="display:none;">
+      <div class="live-stats" id="mm-live-stats">Correct: 0 · Errors: 0</div>
+      <div class="mm-grid" id="mm-grid"></div>
+    </div>
+    <div class="phase-panel results-panel" id="mm-results-phase" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ============ PATTERN RECOGNITION ============ -->
+<section class="screen" id="screen-pattern-game" data-screen="pattern-game">
+  <div class="game-header"><button class="home-btn" data-go="game-select">⬅️</button><div class="score-pill" id="pg-score">Round 0 / 5</div></div>
+  <div class="game-body">
+    <div class="game-title">Pattern Recognition</div>
+    <div class="game-sub">Watch the shapes light up, then tap them back in the same order.</div>
+
+    <div class="phase-panel" id="pg-diff-phase">
+      <p class="phase-label">Choose a difficulty to begin</p>
+      <div class="diff-btns">
+        <button class="diff-btn" data-prefix="pg" data-diff="easy">Easy<span>3 shapes</span></button>
+        <button class="diff-btn" data-prefix="pg" data-diff="medium">Medium<span>5 shapes</span></button>
+        <button class="diff-btn" data-prefix="pg" data-diff="hard">Hard<span>7 shapes</span></button>
+      </div>
+    </div>
+    <div class="phase-panel" id="pg-play-phase" style="display:none;">
+      <div class="live-stats" id="pg-live-stats">Correct: 0 · Errors: 0</div>
+      <div class="pg-status" id="pg-status">Get ready…</div>
+      <div class="pg-grid" id="pg-grid"></div>
+    </div>
+    <div class="phase-panel results-panel" id="pg-results-phase" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ============ DAILY ROUTINE RECALL ============ -->
+<section class="screen" id="screen-daily-routine" data-screen="daily-routine">
+  <div class="game-header"><button class="home-btn" data-go="game-select">⬅️</button><div class="score-pill" id="dr-score">Round 0 / 5</div></div>
+  <div class="game-body">
+    <div class="game-title">Daily Routine Recall</div>
+    <div class="game-sub">Tap the activities in the order you do them each day, starting from waking up.</div>
+
+    <div class="phase-panel" id="dr-diff-phase">
+      <p class="phase-label">Choose a difficulty to begin</p>
+      <div class="diff-btns">
+        <button class="diff-btn" data-prefix="dr" data-diff="easy">Easy<span>4 steps</span></button>
+        <button class="diff-btn" data-prefix="dr" data-diff="medium">Medium<span>6 steps</span></button>
+        <button class="diff-btn" data-prefix="dr" data-diff="hard">Hard<span>8 steps</span></button>
+      </div>
+    </div>
+    <div class="phase-panel" id="dr-play-phase" style="display:none;">
+      <div class="live-stats" id="dr-live-stats">Correct: 0 · Errors: 0</div>
+      <div class="routine-slots" id="dr-slots"></div>
+      <div class="routine-pool" id="dr-pool"></div>
+      <div class="routine-hint" id="dr-hint"></div>
+    </div>
+    <div class="phase-panel results-panel" id="dr-results-phase" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ============ TEA LEAF SORTING ============ -->
+<section class="screen" id="screen-tea-sorting" data-screen="tea-sorting">
+  <div class="game-header"><button class="home-btn" data-go="game-select">⬅️</button><div class="score-pill" id="ts-score">Round 0 / 5</div></div>
+  <div class="game-body">
+    <div class="game-title">Tea Leaf Sorting</div>
+    <div class="game-sub">As each leaf slides across, tap the correct basket — fresh green leaves left, dry brown leaves right.</div>
+
+    <div class="phase-panel" id="ts-diff-phase">
+      <p class="phase-label">Choose a difficulty to begin</p>
+      <div class="diff-btns">
+        <button class="diff-btn" data-prefix="ts" data-diff="easy">Easy<span>slow pace</span></button>
+        <button class="diff-btn" data-prefix="ts" data-diff="medium">Medium<span>moderate pace</span></button>
+        <button class="diff-btn" data-prefix="ts" data-diff="hard">Hard<span>fast pace</span></button>
+      </div>
+    </div>
+    <div class="phase-panel" id="ts-play-phase" style="display:none;">
+      <div class="live-stats" id="ts-live-stats">Correct: 0 · Errors: 0</div>
+      <div class="ts-track"><span class="lane-label">Leaves</span></div>
+      <div class="ts-bins">
+        <button class="ts-bin fresh" id="ts-fresh-btn"><span class="b-em">🧺</span>Fresh</button>
+        <button class="ts-bin dry" id="ts-dry-btn"><span class="b-em">🧺</span>Dry</button>
+      </div>
+      <div class="ts-feedback" id="ts-feedback"></div>
+    </div>
+    <div class="phase-panel results-panel" id="ts-results-phase" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ============ RHYTHM & TAP ============ -->
+<section class="screen" id="screen-rhythm-tap" data-screen="rhythm-tap">
+  <div class="game-header"><button class="home-btn" data-go="game-select">⬅️</button><div class="score-pill" id="rt-score">Round 0 / 5</div></div>
+  <div class="game-body">
+    <div class="game-title">Rhythm & Tap — Folk Beat Match</div>
+    <div class="game-sub">Watch the drum pulse to the beat of the Log Drum, then tap the button right as it pulses.</div>
+
+    <div class="phase-panel" id="rt-diff-phase">
+      <p class="phase-label">Choose a difficulty to begin</p>
+      <div class="diff-btns">
+        <button class="diff-btn" data-prefix="rt" data-diff="easy">Easy<span>relaxed tempo</span></button>
+        <button class="diff-btn" data-prefix="rt" data-diff="medium">Medium<span>steady tempo</span></button>
+        <button class="diff-btn" data-prefix="rt" data-diff="hard">Hard<span>quick tempo</span></button>
+      </div>
+    </div>
+    <div class="phase-panel" id="rt-play-phase" style="display:none;">
+      <div class="live-stats" id="rt-live-stats">Correct: 0 · Errors: 0</div>
+      <div class="rt-stage">
+        <div class="rt-drum" id="rt-drum">🥁</div>
+        <div class="rt-beats" id="rt-beats"></div>
+        <button class="rt-tapbtn" id="rt-tapbtn">TAP</button>
+        <div class="rt-feedback" id="rt-feedback"></div>
+      </div>
+    </div>
+    <div class="phase-panel results-panel" id="rt-results-phase" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ============ REMINDERS / MEDICINE (full CRUD) ============ -->
+<section class="screen" id="screen-reminders" data-screen="reminders">
+  <div class="patient-topbar"><button class="home-btn" data-go="home">🏠</button><div id="chip-slot-2"></div></div>
+  <div class="reminders-wrap">
+    <div class="section-heading" style="margin-bottom:24px;">Medicine & Reminders</div>
+    <div class="card add-reminder-card">
+      <h3>Add a new reminder</h3>
+      <form id="reminder-form">
+        <div class="add-form-row">
+          <input type="text" id="rem-title" placeholder="e.g. Take evening medicine" required>
+          <input type="text" id="rem-time" placeholder="e.g. 7:00 PM" required>
+          <select id="rem-type">
+            <option value="medicine">💊 Medicine</option>
+            <option value="hydration">💧 Hydration</option>
+            <option value="activity">🚶 Activity</option>
+            <option value="appointment">🏥 Appointment</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">+ Add reminder</button>
+      </form>
+    </div>
+    <div class="reminder-section-title">Pending today</div>
+    <div class="reminder-list" id="reminder-list-pending"></div>
+    <div class="reminder-section-title">Completed</div>
+    <div class="reminder-list" id="reminder-list-done"></div>
+  </div>
+</section>
+
+<!-- ============ CAREGIVER MESSAGE ============ -->
+<section class="screen" id="screen-messages" data-screen="messages">
+  <div class="patient-topbar"><button class="home-btn" data-go="home">🏠</button><div id="chip-slot-3"></div></div>
+  <div class="section-heading">Messages from your Caregiver</div>
+  <div class="messages-wrap" id="messages-list"></div>
+</section>
+
+<!-- ============ CHECK-IN ============ -->
+<section class="screen" id="screen-mood" data-screen="mood">
+  <div class="patient-topbar"><button class="home-btn" data-go="home">🏠</button><div></div></div>
+  <div class="section-heading">How are you feeling right now?</div>
+  <div class="mood-row">
+    <button class="mood-btn" data-mood="Happy">😊</button>
+    <button class="mood-btn" data-mood="Okay">😐</button>
+    <button class="mood-btn" data-mood="Sad">😢</button>
+    <button class="mood-btn" data-mood="Tired">😴</button>
+  </div>
+  <div class="mood-confirm" id="mood-confirm">Thank you — noted.</div>
+</section>
+
+<!-- ============ MY PROGRESS ============ -->
+<section class="screen" id="screen-progress" data-screen="progress">
+  <div class="patient-topbar"><button class="home-btn" data-go="home">🏠</button><div id="chip-slot-4"></div></div>
+  <div class="section-heading">My Progress</div>
+  <div class="progress-wrap" id="progress-wrap"></div>
+</section>
+
+<!-- ============ CAREGIVER DASHBOARD ============ -->
+<section class="screen" id="screen-dashboard" data-screen="dashboard">
+  <div class="dash-topbar">
+    <div class="dash-brand serif" style="display:flex;align-items:center;gap:10px;">
+      <span class="mark" style="width:30px;height:30px;">
+        <svg width="30" height="30" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="#0F231C"/>
+          <circle cx="20" cy="15" r="5.5" fill="#F1C978"/>
+          <path d="M-1 26 Q9 15 18 26 Q23 18 29 26 Q34 20 41 26 L41 40 L-1 40 Z" fill="#132821" opacity=".7"/>
+          <path d="M-1 30 Q10 21 19 30 Q25 23 31 30 Q36 25 41 30 L41 41 L-1 41 Z" fill="#0B1B15"/>
+        </svg>
+      </span>
+      Smriti <span style="font-family:'Inter';font-weight:500;opacity:.7;font-size:.82rem;">— Caregiver View</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <select class="dash-select" id="dash-patient-select"></select>
+      <button class="btn btn-ghost" style="color:#fff;" id="btn-logout-dash">Log out</button>
+    </div>
+  </div>
+  <div class="dash-content">
+    <div class="patient-banner" id="patient-banner"></div>
+    <div class="dash-grid">
+      <div class="panel"><h3>Cognitive Score Trend (last 7 days)</h3><div class="chart-wrap"><canvas id="score-chart"></canvas></div></div>
+      <div class="panel"><h3>Today's Summary</h3><div class="summary-cards" id="summary-cards"></div></div>
+    </div>
+    <div class="panel"><h3>⚠️ Alerts</h3><div class="alerts-list" id="alerts-list"></div></div>
+    <div class="panel"><h3>🎮 Recent Game Sessions</h3><div class="game-history-mini" id="game-history-mini"></div></div>
+    <div class="panel">
+      <h3>💬 Send a message to patient</h3>
+      <div class="send-msg-row">
+        <input type="text" id="cg-msg-input" placeholder="Type a quick note or reminder…">
+        <button class="btn btn-primary" id="cg-msg-send">Send</button>
+      </div>
+      <div class="send-msg-note" id="cg-msg-note"></div>
+    </div>
+  </div>
+</section>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>

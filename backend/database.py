@@ -17,5 +17,7 @@ db = client["smriti"]
 #   from database import patients_collection
 patients_collection = db["patients"]
 caregivers_collection = db["caregivers"]
-reminders_collection = db["reminders"]
+medicine_collection = db["medicine"]
+messages_collection = db["messages"]
+checkins_collection = db["checkins"]
 game_sessions_collection = db["game_sessions"]
