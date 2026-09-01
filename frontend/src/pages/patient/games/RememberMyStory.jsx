@@ -3,11 +3,12 @@ import PatientTopbar from '../../../components/PatientTopbar.jsx'
 import DifficultyPicker from '../../../components/DifficultyPicker.jsx'
 import ResultsPanel from '../../../components/ResultsPanel.jsx'
 import ResponseButtons from '../../../components/ResponseButtons.jsx'
-import { CULTURES } from '../../../data/culturalContent.js'
+import { twoCultureOptions } from '../../../data/culturalContent.js'
 import { getFamilyMemoryCards } from '../../../data/familyMemoryContent.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { useSettings } from '../../../context/SettingsContext.jsx'
 import { useLocalGameResult } from '../../../hooks/useLocalGameResult.js'
+import { matchYesNoIntent } from '../../../utils/voiceService.js'
 
 // Difficulty controls how many distinct story cards are drawn from the
 // culture's pool before being cycled to fill the standardized 5 rounds.
@@ -18,18 +19,13 @@ const DIFF = {
 }
 const TOTAL_ROUNDS = 5
 
-function shuffle(arr) {
-  const a = arr.slice()
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-
+// Unlike Music Memory's fully-shuffled playlist, this keeps `pool`'s given
+// order (personalized family cards first, then generic culture cards, per
+// getFamilyMemoryCards) so personalized cards are the ones actually shown
+// in the earliest rounds rather than being randomized away.
 function buildPlaylist(pool, distinctCount) {
-  const subset = shuffle(pool).slice(0, Math.min(distinctCount, pool.length))
-  return shuffle(Array.from({ length: TOTAL_ROUNDS }, (_, i) => subset[i % subset.length]))
+  const subset = pool.slice(0, Math.min(distinctCount, pool.length))
+  return Array.from({ length: TOTAL_ROUNDS }, (_, i) => subset[i % subset.length])
 }
 
 export default function RememberMyStory() {
@@ -37,7 +33,10 @@ export default function RememberMyStory() {
   const { language, t } = useSettings()
   const record = useLocalGameResult('family_memory')
 
-  const [culture, setCulture] = useState(CULTURES.some((c) => c.code === language) ? language : 'en')
+  // Only 2 style choices: the patient's own language, plus Hindi — same
+  // logic as Music Memory (see twoCultureOptions).
+  const cultureOptions = twoCultureOptions(language)
+  const [culture, setCulture] = useState(cultureOptions[0].code)
   const [phase, setPhase] = useState('diff') // diff | play | results
   const [difficulty, setDifficulty] = useState(null)
   const [round, setRound] = useState(0)
@@ -104,7 +103,7 @@ export default function RememberMyStory() {
         <label className="block mb-6">
           <span className="block text-sm font-semibold text-ink-soft mb-2">{t('story_choose_background')}</span>
           <select value={culture} onChange={(e) => restart(e.target.value)} className="border border-line rounded-lg px-4 py-2">
-            {CULTURES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+            {cultureOptions.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
           </select>
         </label>
 
@@ -119,9 +118,15 @@ export default function RememberMyStory() {
           <>
             <div className="inline-block bg-primary-tint text-primary text-sm font-semibold px-4 py-1 rounded-full mb-4">{t('story_word')} {round} / {TOTAL_ROUNDS}</div>
             <p className="text-sm text-ink-faint mb-2">{card.theme}</p>
-            <div className="text-7xl mb-6 bg-surface border border-line rounded-2xl py-10">{card.emoji}</div>
+            {card.photo ? (
+              <div className="mb-6 bg-surface border border-line rounded-2xl py-6 flex items-center justify-center">
+                <img src={card.photo} alt="" className="max-h-48 rounded-xl object-cover" />
+              </div>
+            ) : (
+              <div className="text-7xl mb-6 bg-surface border border-line rounded-2xl py-10">{card.emoji}</div>
+            )}
             <p className="text-lg font-semibold text-ink mb-6">{card.prompt}</p>
-            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(text) => { setTranscript(text); answer('told_more') }} />
+            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(text) => { setTranscript(text); answer(matchYesNoIntent(text)) }} />
           </>
         )}
 

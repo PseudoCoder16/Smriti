@@ -5,10 +5,24 @@
 
 export const CULTURES = [
   { code: 'en', label: 'General NER' },
+  { code: 'hi', label: 'Hindi' },
   { code: 'as', label: 'Assamese' },
   { code: 'mni', label: 'Manipuri' },
   { code: 'mz', label: 'Mizo' },
 ]
+
+// Music Memory and Remember My Story both narrow their culture/style picker
+// down to just 2 choices: the patient's own registered UI language, plus
+// Hindi as the second fixed option. If the patient's language already IS
+// Hindi (or has no dedicated culture entry), General NER fills the second
+// slot instead so the two options are never identical.
+export function twoCultureOptions(language) {
+  const primary = CULTURES.find((c) => c.code === language) || CULTURES.find((c) => c.code === 'en')
+  const secondary = primary.code === 'hi'
+    ? CULTURES.find((c) => c.code === 'en')
+    : CULTURES.find((c) => c.code === 'hi')
+  return [primary, secondary]
+}
 
 // ---------------- Remember My Story — reminiscence cards ----------------
 // Each card: theme category, emoji illustration, and a gentle prompt question.
@@ -45,6 +59,14 @@ export const REMINISCENCE_CARDS = {
     { theme: 'Puanchei', emoji: '🧣', prompt: 'Ni pawimawh takah hian puan hi i silh ṭhin em?' },
     { theme: 'Food', emoji: '🥘🎍', prompt: 'Bekang ei hi i duh em?' },
   ],
+  hi: [
+    { theme: 'Diwali Festival', emoji: '🪔🎉', prompt: 'क्या यह आपको दिवाली की याद दिलाता है?' },
+    { theme: 'Village life', emoji: '🏘️🌄', prompt: 'क्या आप ऐसे ही किसी गाँव में बड़े हुए थे?' },
+    { theme: 'Farming', emoji: '🌾👨‍🌾', prompt: 'क्या आपको खेतों में काम करना याद है?' },
+    { theme: 'Clothing', emoji: '🧵👘', prompt: 'क्या आपने खास मौकों पर ऐसे कपड़े पहने थे?' },
+    { theme: 'Food', emoji: '🍛🥘', prompt: 'क्या यह आपके पसंदीदा घर के खाने की याद दिलाता है?' },
+    { theme: 'Landscape', emoji: '⛰️🌿', prompt: 'क्या यह पहाड़ी इलाका आपको घर की याद दिलाता है?' },
+  ],
 }
 
 // ---------------- Music & Memory — track metadata ----------------
@@ -72,5 +94,10 @@ export const MUSIC_TRACKS = {
     { title: 'Mizo hla 1', audioSrc: '/songs/mizo/1.mp3' },
     { title: 'Mizo hla 2', audioSrc: '/songs/mizo/2.mp3' },
     { title: 'Mizo hla 3', audioSrc: '/songs/mizo/3.mp3' },
+  ],
+  hi: [
+    { title: 'Hindi folk song 1', audioSrc: '/songs/hindi/1.mp3' },
+    { title: 'Hindi folk song 2', audioSrc: '/songs/hindi/2.mp3' },
+    { title: 'Hindi folk song 3', audioSrc: '/songs/hindi/3.mp3' },
   ],
 }

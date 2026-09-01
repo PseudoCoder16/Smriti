@@ -19,8 +19,7 @@ export default function Medicine() {
 
   useEffect(() => { load() }, [])
 
-  async function toggleStatus(m) {
-    const status = m.status === 'taken' ? 'pending' : 'taken'
+  async function setStatus(m, status) {
     await api.put(`/medicine/${m.medicine_id}`, { status })
     load()
   }
@@ -36,8 +35,8 @@ export default function Medicine() {
           <p className="text-ink-soft">Loading…</p>
         ) : (
           <>
-            <Section title={t('pending_today')} items={pending} onToggle={toggleStatus} empty="Nothing pending — you're all caught up." t={t} />
-            <Section title={t('completed')} items={done} onToggle={toggleStatus} empty="No medicine marked as taken yet today." t={t} />
+            <Section title={t('pending_today')} items={pending} onSetStatus={setStatus} empty="Nothing pending — you're all caught up." t={t} />
+            <Section title={t('completed')} items={done} onSetStatus={setStatus} empty="No medicine marked as taken yet today." t={t} />
           </>
         )}
       </div>
@@ -45,7 +44,7 @@ export default function Medicine() {
   )
 }
 
-function Section({ title, items, onToggle, empty, t }) {
+function Section({ title, items, onSetStatus, empty, t }) {
   return (
     <div className="mb-8">
       <h3 className="font-semibold text-ink-soft mb-3">{title}</h3>
@@ -54,18 +53,37 @@ function Section({ title, items, onToggle, empty, t }) {
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((m) => (
-            <div key={m.medicine_id} className="flex items-center gap-4 bg-surface border border-line rounded-xl p-4">
+            <div key={m.medicine_id} className="flex items-center gap-4 bg-surface border border-line rounded-xl p-4 flex-wrap">
               <span className="text-2xl">💊</span>
-              <div className="flex-1">
+              <div className="flex-1 min-w-[8rem]">
                 <div className={`font-semibold ${m.status === 'taken' ? 'line-through text-ink-faint' : ''}`}>{m.name}</div>
                 <div className="text-sm text-ink-faint">{m.time} · {m.frequency}</div>
               </div>
-              <button
-                onClick={() => onToggle(m)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold ${m.status === 'taken' ? 'bg-primary-tint text-primary' : 'bg-primary text-white'}`}
-              >
-                {m.status === 'taken' ? `✔️ ${t('taken')}` : `⏳ ${t('mark_taken')}`}
-              </button>
+              <div className="flex gap-2">
+                {m.status === 'taken' ? (
+                  <button
+                    onClick={() => onSetStatus(m, 'pending')}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary-tint text-primary"
+                  >
+                    ✔️ {t('taken')}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onSetStatus(m, 'taken')}
+                      className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white"
+                    >
+                      ⏳ {t('mark_taken')}
+                    </button>
+                    <button
+                      onClick={() => onSetStatus(m, 'remind_later')}
+                      className="px-4 py-2 rounded-lg text-sm font-semibold bg-surface border border-line text-ink-soft"
+                    >
+                      🔔 {t('remind_later')}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>

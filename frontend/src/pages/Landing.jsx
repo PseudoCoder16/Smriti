@@ -56,15 +56,15 @@ export default function Landing() {
       <header className="w-full py-5 px-4 md:px-8 bg-transparent sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-white/50 border-b border-[#C1A063]/10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="hidden md:block w-40"></div>
-          <nav className="flex items-center gap-8">
-            <a className="text-sm font-medium text-gray-700 hover:text-forest transition-colors tracking-wide" href="#games">Games</a>
-            <a className="text-sm font-medium text-gray-700 hover:text-forest transition-colors tracking-wide" href="#why-smriti">Why Smriti</a>
-          </nav>
           <div className="flex-shrink-0 text-center mx-4">
             <a className="text-3xl font-serif-custom font-bold tracking-tight text-forest" href="/">
               Smriti
             </a>
           </div>
+          <nav className="flex items-center gap-8">
+            <a className="text-sm font-medium text-gray-700 hover:text-forest transition-colors tracking-wide" href="#games">Games</a>
+            <a className="text-sm font-medium text-gray-700 hover:text-forest transition-colors tracking-wide" href="#why-smriti">Why Smriti</a>
+          </nav>
           <div className="flex items-center w-40 justify-end">
             <Link className="bg-forest text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#27473b] transition-colors shadow-sm" to="/auth">
               Login / Register
@@ -96,8 +96,8 @@ export default function Landing() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 justify-items-center">
               {[
-                { name: 'Familiar Songs', desc: 'Recall melodies from your past and match familiar tunes to strengthen auditory memory.', bgColor: '#C8E6C9', img: 'https://lh3.googleusercontent.com/aida/AEtjO1WORpLxeo0narmz-Xgsz8r5jWtM7azxr-1RiYAfkyEUdGIsKh94ydE1BixdbN8RkvqMm2deMiJLaqfqKAPG0DkrGIXicWRHvCk-Cn48TvMQWO2pilqYMES40zHlQkamNFf0Xx3DDOezSkzNvpYGq14_clV53tPV8TrjQD-vAJ2DayA4O3LHJmpw-igaB0SGfv_fW5gdV0duhpY6HFuiGRYUBevlagvC2wWO95dOewIsBY8SYDyITLFcUck' },
-                { name: 'Family Memory', desc: 'Identify family members and loved ones through photos to reinforce facial recognition.', bgColor: '#BBDEFB', img: 'https://lh3.googleusercontent.com/aida/AEtjO1WgceprIvRHAQxQ6jN7SCJeIUyRzzKf2G85Zg1m_05k_klDHI1YCYcjlUplRRyhXma_I2N4K_vS8I8MpMsdnARasFGoiMIQLYx-D_ZbyzmE0IzJwNhzqTTnCGtFEIZPtXRcQT5cMBUXOtetvjJADyTsx6c2JbhcU0fZ4m9ppGZVmULaj9xv2lgSP_JPJZLuZ7uPghZjpiTsk8DpBt7bU0No7NnC_LWDdE0H1BIl0LMKFt6N-zXxTWiUfC0' },
+                { name: 'Music & Memory', desc: 'Recall melodies from your past and match familiar tunes to strengthen auditory memory.', bgColor: '#C8E6C9', img: 'https://lh3.googleusercontent.com/aida/AEtjO1WORpLxeo0narmz-Xgsz8r5jWtM7azxr-1RiYAfkyEUdGIsKh94ydE1BixdbN8RkvqMm2deMiJLaqfqKAPG0DkrGIXicWRHvCk-Cn48TvMQWO2pilqYMES40zHlQkamNFf0Xx3DDOezSkzNvpYGq14_clV53tPV8TrjQD-vAJ2DayA4O3LHJmpw-igaB0SGfv_fW5gdV0duhpY6HFuiGRYUBevlagvC2wWO95dOewIsBY8SYDyITLFcUck' },
+                { name: 'Remember My Story', desc: 'Identify family members and loved ones through photos to reinforce facial recognition.', bgColor: '#BBDEFB', img: 'https://lh3.googleusercontent.com/aida/AEtjO1WgceprIvRHAQxQ6jN7SCJeIUyRzzKf2G85Zg1m_05k_klDHI1YCYcjlUplRRyhXma_I2N4K_vS8I8MpMsdnARasFGoiMIQLYx-D_ZbyzmE0IzJwNhzqTTnCGtFEIZPtXRcQT5cMBUXOtetvjJADyTsx6c2JbhcU0fZ4m9ppGZVmULaj9xv2lgSP_JPJZLuZ7uPghZjpiTsk8DpBt7bU0No7NnC_LWDdE0H1BIl0LMKFt6N-zXxTWiUfC0' },
                 { name: 'Color Sort', desc: 'Sort objects by color and shape to sharpen visual discrimination and attention.', bgColor: '#FFE0B2', img: 'https://lh3.googleusercontent.com/aida/AEtjO1WTKtNfLjDoYY4JFdkkn5Iz811kHMJgw3KcKlhHZDWo_2qCNzF04sU6zbk82PMDVhaEvULRBDwAOZUoi_2Gsy1K_ufPs9d4Y38AOMGRDn7PpCfeHWjZs0J-Dym4GX7SXlyIbDRHHXX6Uv5FDuPeiM7ur_tOjUP9F4zSf1om6OCSK4rC9rnR9uSebYf13svf_PrZsknxV_rrp44f1SslI9FJbkPXn-sOwV9x9XinhFrwUmI4-11oAfke354' },
                 { name: 'Rhythm & Tap', desc: 'Follow rhythmic patterns and tap along to exercise motor timing and coordination.', bgColor: '#F8BBD0', img: 'https://lh3.googleusercontent.com/aida/AEtjO1VtXZpVzXePs_KGuJLm_9NTRtPriBQ_EzZoteaCQnxYxm0-IX8J6arObNw4j2VKRHzPZLlTdXv6BD2U2KD6Wg5ZCKwtJjJf8K1grBwlhtBOibVZx6jUWIu8UluM780lsF_vOWO615py0W3uJvY2R8NeUzkXSIiuLSLc91G9E3dLb5y7Br5g8wcNEpNUSu_8P-ORPbonkjO7w9_DUr4NtpcAZslpUijtN9eQzCMp-KVKY9TjKvzr16kGDX4' },
                 { name: 'Pattern Recognition', desc: 'Spot patterns in sequences and shapes to train attention and cognitive focus.', bgColor: '#D1C4E9', img: 'https://lh3.googleusercontent.com/aida/AEtjO1UA2u9MwDfGA37jCJJj2PNr3aU30KbsjVXop5yIdm9LkyrN-0vgo7hi_bNfOnNWlATaHVzfc5F9g4QesQKnhZPZNcRnjwNC7H0qr_DCZju96ee6iEyCDWIL9Zh4Z8UsOTLnnFdWBunSYPBYVLf8aa2FDNZCgJgVqhx2M33THgpXaZPIU9Kx9jB4dkbDHo72V6JoSN3vm3sMIWC8ykhGPI3Gbd1mfXwTxZiCeWnp9OWEoboedi02bhAp6g' }

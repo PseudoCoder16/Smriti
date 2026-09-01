@@ -15,17 +15,17 @@ const COLORS = [
   { key: 'green', hex: '#1f7a3d', letter: 'G' },
   { key: 'yellow', hex: '#d4a017', letter: 'Y' },
   { key: 'purple', hex: '#7c3aed', letter: 'P' },
+  { key: 'orange', hex: '#e07b1a', letter: 'O' },
+  { key: 'teal', hex: '#0f9b8e', letter: 'T' },
 ]
 const CAPACITY = 4
 const TOTAL_ROUNDS = 5
 
-// More tubes/colors and a heavier scramble as difficulty rises, per the
-// "fewer/more balls, fewer/more tubes" guidance — exact counts tuned for a
-// playable, reliably-solvable puzzle rather than any fixed target count.
+// Tubes = colors + 2 empty maneuvering tubes at every difficulty, per spec.
 const DIFF = {
   easy: { colors: 3, emptyTubes: 2, scramble: 12, sub: '3 colors, 5 tubes' },
-  medium: { colors: 4, emptyTubes: 2, scramble: 20, sub: '4 colors, 6 tubes' },
-  hard: { colors: 5, emptyTubes: 2, scramble: 30, sub: '5 colors, 7 tubes' },
+  medium: { colors: 5, emptyTubes: 2, scramble: 24, sub: '5 colors, 7 tubes' },
+  hard: { colors: 7, emptyTubes: 2, scramble: 36, sub: '7 colors, 9 tubes' },
 }
 
 function isSolved(tubes) {

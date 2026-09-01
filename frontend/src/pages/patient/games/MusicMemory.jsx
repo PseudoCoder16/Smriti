@@ -3,9 +3,10 @@ import PatientTopbar from '../../../components/PatientTopbar.jsx'
 import DifficultyPicker from '../../../components/DifficultyPicker.jsx'
 import ResultsPanel from '../../../components/ResultsPanel.jsx'
 import ResponseButtons from '../../../components/ResponseButtons.jsx'
-import { CULTURES, MUSIC_TRACKS } from '../../../data/culturalContent.js'
+import { MUSIC_TRACKS, twoCultureOptions } from '../../../data/culturalContent.js'
 import { useSettings } from '../../../context/SettingsContext.jsx'
 import { useLocalGameResult } from '../../../hooks/useLocalGameResult.js'
+import { matchYesNoIntent } from '../../../utils/voiceService.js'
 
 // Difficulty controls how many distinct songs are drawn from the culture's
 // pool before being cycled to fill the standardized 5 rounds — easy repeats
@@ -47,7 +48,10 @@ export default function MusicMemory() {
   const { language, t } = useSettings()
   const record = useLocalGameResult('song_recognition')
 
-  const [culture, setCulture] = useState(CULTURES.some((c) => c.code === language) ? language : 'en')
+  // Only 2 style choices: the patient's own language, plus Hindi (see
+  // twoCultureOptions) — always defaults to the patient's own language.
+  const cultureOptions = twoCultureOptions(language)
+  const [culture, setCulture] = useState(cultureOptions[0].code)
   const [phase, setPhase] = useState('diff') // diff | play | results
   const [difficulty, setDifficulty] = useState(null)
   const [round, setRound] = useState(0)
@@ -113,7 +117,7 @@ export default function MusicMemory() {
         <label className="block mb-6">
           <span className="block text-sm font-semibold text-ink-soft mb-2">{t('song_choose_style')}</span>
           <select value={culture} onChange={(e) => restart(e.target.value)} className="border border-line rounded-lg px-4 py-2">
-            {CULTURES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+            {cultureOptions.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
           </select>
         </label>
 
@@ -127,10 +131,10 @@ export default function MusicMemory() {
         {phase === 'play' && track && (
           <>
             <div className="inline-block bg-primary-tint text-primary text-sm font-semibold px-4 py-1 rounded-full mb-4">{t('song_word')} {round} / {TOTAL_ROUNDS}</div>
-            <h2 className="text-xl serif mb-4">{track.title}</h2>
+            <h2 className="text-xl patient-serif mb-4">{track.title}</h2>
             <div className="mb-6"><AudioPlayer src={track.audioSrc} /></div>
             <p className="text-lg font-semibold text-ink mb-6">{t('song_recognize_prompt')}</p>
-            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(text) => { setTranscript(text); answer('told_more') }} />
+            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(text) => { setTranscript(text); answer(matchYesNoIntent(text)) }} />
           </>
         )}
 

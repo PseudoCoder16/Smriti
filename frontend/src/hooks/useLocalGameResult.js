@@ -1,8 +1,9 @@
 import { useAuth } from '../context/AuthContext.jsx'
+import { api } from '../api/client.js'
 
-// Phase 2: single shared, local-only (no backend/DB yet) result builder used
-// by all five patient games, so every game produces the exact same
-// standardized result shape.
+// Single shared result builder used by every patient game, so they all
+// produce the exact same standardized result shape (this exact shape is
+// also FastAPI's GameResultRequest — see backend/models/schemas.py).
 //
 // `missed` is optional and only meaningful for a game that can have a
 // genuine "no response given" outcome distinct from an active wrong answer
@@ -48,8 +49,13 @@ export function useLocalGameResult(gameId) {
       timestamp: new Date().toISOString(),
     }
 
-    // Local-only for Phase 2 — no API call yet. Logged so results can be verified during testing.
-    console.log('[local game result]', result)
+    try {
+      await api.post('/game/result', result)
+    } catch (err) {
+      // Never let a save failure block the game's own results screen —
+      // the result is still returned below either way.
+      console.warn('[game result] failed to save to backend', err)
+    }
     return result
   }
 }

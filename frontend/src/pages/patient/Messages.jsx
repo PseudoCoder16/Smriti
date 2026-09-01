@@ -3,17 +3,25 @@ import PatientTopbar from '../../components/PatientTopbar.jsx'
 import { api } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useSettings } from '../../context/SettingsContext.jsx'
-import { speak } from '../../utils/speak.js'
+import { speak } from '../../utils/voiceService.js'
 
 export default function Messages() {
   const { session } = useAuth()
-  const { t } = useSettings()
+  const { t, language } = useSettings()
   const [messages, setMessages] = useState(null)
-  const [acked, setAcked] = useState({})
 
   useEffect(() => {
     api.get(`/messages/${session.patient_id}`).then((res) => setMessages(res.messages))
   }, [])
+
+  async function markRead(messageId) {
+    setMessages((msgs) => msgs.map((m) => (m.message_id === messageId ? { ...m, read: true } : m)))
+    try {
+      await api.put(`/message/${messageId}`, { read: true })
+    } catch (err) {
+      console.warn('[messages] failed to save read status', err)
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -31,17 +39,17 @@ export default function Messages() {
               <div className="text-xs text-ink-faint mt-1">{new Date(m.timestamp).toLocaleString()}</div>
               <div className="flex gap-2 mt-3">
                 <button
-                  onClick={() => speak(m.text)}
+                  onClick={() => speak(m.text, language)}
                   className="px-4 py-2 rounded-lg bg-primary-tint text-primary text-sm font-semibold"
                 >
                   🔊 {t('listen')}
                 </button>
                 <button
-                  onClick={() => setAcked((a) => ({ ...a, [m.message_id]: true }))}
-                  disabled={acked[m.message_id]}
+                  onClick={() => markRead(m.message_id)}
+                  disabled={m.read}
                   className="px-4 py-2 rounded-lg bg-surface border border-line text-sm font-semibold disabled:opacity-50"
                 >
-                  {acked[m.message_id] ? `✔️ ${t('got_it')}` : t('got_it')}
+                  {m.read ? `✔️ ${t('got_it')}` : t('got_it')}
                 </button>
               </div>
             </div>

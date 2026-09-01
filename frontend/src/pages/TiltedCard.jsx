@@ -8,6 +8,7 @@ export default function TiltedCard({
   bgColor = '#c8b6ff',
   rotateAmplitude = 12,
   scaleOnHover = 1.05,
+  onClick,
 }) {
   const cardRef = useRef(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -40,6 +41,10 @@ export default function TiltedCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } } : undefined}
       className="relative cursor-pointer"
       style={{
         width: '220px',

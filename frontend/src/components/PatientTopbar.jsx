@@ -9,7 +9,7 @@ export default function PatientTopbar({ title, back = '/home' }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-line bg-surface flex-wrap">
       <div className="flex items-center gap-3 min-w-0">
-        <Link to="/home" className="serif text-lg text-primary-dark shrink-0" aria-label="Smriti home">
+        <Link to="/home" className="patient-serif text-lg text-primary-dark shrink-0" aria-label="Smriti home">
           Smriti
         </Link>
         <button
@@ -19,14 +19,14 @@ export default function PatientTopbar({ title, back = '/home' }) {
         >
           🏠
         </button>
-        <h1 className="text-lg sm:text-xl serif text-ink truncate">{title}</h1>
+        <h1 className="text-lg sm:text-xl patient-serif text-ink truncate">{title}</h1>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="text-sm border border-line rounded-lg px-2 py-2"
+          className="text-sm border border-line rounded-full px-3 py-2"
           aria-label={t('language')}
         >
           {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}

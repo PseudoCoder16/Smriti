@@ -8,7 +8,7 @@ export default function ResultsPanel({ difficulty, score, correct, errors, avgRe
 
   return (
     <div className="flex flex-col items-center gap-6 py-10">
-      <h3 className="text-xl serif">{t('session_complete')} — 5 {t('round')}s ({t(difficulty)})</h3>
+      <h3 className="text-xl patient-serif">{t('session_complete')} — 5 {t('round')}s ({t(difficulty)})</h3>
       <div className="grid grid-cols-4 gap-4 w-full max-w-lg">
         {[
           [t('score'), `${score}%`],
@@ -23,9 +23,9 @@ export default function ResultsPanel({ difficulty, score, correct, errors, avgRe
         ))}
       </div>
       <div className="flex flex-wrap justify-center gap-3">
-        <button onClick={onReplay} className="px-6 py-3 rounded-lg bg-primary text-white font-semibold">🔁 {t('play_again')}</button>
-        <button onClick={onChangeDifficulty} className="px-6 py-3 rounded-lg border-2 border-primary text-primary font-semibold">🎚️ {t('change_difficulty')}</button>
-        <button onClick={() => navigate('/games')} className="px-6 py-3 rounded-lg text-ink-soft font-semibold">← {t('back_to_games')}</button>
+        <button onClick={onReplay} className="px-6 py-3 rounded-full bg-primary text-white font-semibold shadow-sm hover:bg-primary-dark transition">🔁 {t('play_again')}</button>
+        <button onClick={onChangeDifficulty} className="px-6 py-3 rounded-full border-2 border-primary text-primary font-semibold hover:bg-primary-tint transition">🎚️ {t('change_difficulty')}</button>
+        <button onClick={() => navigate('/games')} className="px-6 py-3 rounded-full text-ink-soft font-semibold hover:bg-line transition">← {t('back_to_games')}</button>
       </div>
     </div>
   )

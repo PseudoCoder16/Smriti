@@ -1,13 +1,17 @@
 """
 Caregiver -> patient one-way messages (e.g. "Please take your afternoon medicine").
+Patient can mark a message read/"got it" via PUT.
 """
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
+from bson import ObjectId
+from bson.errors import InvalidId
+from fastapi import APIRouter, Depends, HTTPException
+from pymongo import ReturnDocument
 
 from auth_utils import get_current_caregiver
 from database import messages_collection
-from models.schemas import MessageCreateRequest
+from models.schemas import MessageCreateRequest, MessageUpdateRequest
 
 router = APIRouter(tags=["messages"])
 
@@ -17,6 +21,7 @@ def serialize(m: dict) -> dict:
         "message_id": str(m["_id"]),
         "patient_id": m["patient_id"],
         "text": m["text"],
+        "read": m.get("read", False),
         "timestamp": m["timestamp"],
     }
 
@@ -32,9 +37,25 @@ async def send_message(payload: MessageCreateRequest, caregiver: dict = Depends(
     doc = {
         "patient_id": payload.patient_id,
         "text": payload.text,
+        "read": False,
         "timestamp": datetime.now(timezone.utc),
         "sent_by": caregiver["caregiver_id"],
     }
     result = await messages_collection.insert_one(doc)
     doc["_id"] = result.inserted_id
     return serialize(doc)
+
+
+@router.put("/message/{message_id}")
+async def update_message(message_id: str, payload: MessageUpdateRequest):
+    try:
+        oid = ObjectId(message_id)
+    except InvalidId:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    result = await messages_collection.find_one_and_update(
+        {"_id": oid}, {"$set": {"read": payload.read}}, return_document=ReturnDocument.AFTER
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Message not found")
+    return serialize(result)

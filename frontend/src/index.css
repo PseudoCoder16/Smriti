@@ -34,3 +34,12 @@ h1, h2, h3, .serif {
   font-weight: 600;
   letter-spacing: -0.01em;
 }
+
+/* Patient-facing pages match the Landing page's typography (Playfair
+   Display) — scoped to a separate class so the caregiver dashboard and
+   Auth screen keep the original Fraunces look untouched. */
+.patient-serif {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

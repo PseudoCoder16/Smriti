@@ -43,6 +43,13 @@ async def get_patient(patient_id: str):
     }
 
 
+def _response_time(s: dict) -> float:
+    # `average_response_time` is the current field name; `avg_response_ms`
+    # covers any pre-Phase-8 documents still in the collection so old data
+    # keeps working instead of crashing these reads.
+    return s.get("average_response_time", s.get("avg_response_ms", 0)) or 0
+
+
 @router.get("/{patient_id}/games")
 async def get_patient_games(patient_id: str, limit: int = 30):
     cursor = game_sessions_collection.find({"patient_id": patient_id}).sort("timestamp", -1).limit(limit)
@@ -50,12 +57,18 @@ async def get_patient_games(patient_id: str, limit: int = 30):
     async for s in cursor:
         sessions.append({
             "session_id": str(s["_id"]),
-            "game_type": s["game_type"],
-            "difficulty": s["difficulty"],
-            "score": s["score"],
-            "correct": s["correct"],
-            "errors": s["errors"],
-            "avg_response_ms": s["avg_response_ms"],
+            "game_id": s.get("game_id", s.get("game_type")),
+            "difficulty": s.get("difficulty"),
+            "rounds": s.get("rounds"),
+            "correct": s.get("correct", 0),
+            "incorrect": s.get("incorrect", 0),
+            "errors": s.get("errors", 0),
+            "accuracy": s.get("accuracy"),
+            "precision": s.get("precision"),
+            "error_rate": s.get("error_rate"),
+            "average_response_time": _response_time(s),
+            "score": s.get("score"),
+            "completed": s.get("completed", True),
             "timestamp": s["timestamp"],
         })
     return {"sessions": sessions}
@@ -75,10 +88,10 @@ async def get_patient_performance(patient_id: str, days: int = 7):
             "trend": [],
         }
 
-    total_correct = sum(s["correct"] for s in sessions)
-    total_errors = sum(s["errors"] for s in sessions)
+    total_correct = sum(s.get("correct", 0) for s in sessions)
+    total_errors = sum(s.get("errors", 0) for s in sessions)
     total_attempts = total_correct + total_errors
-    avg_response_ms = round(sum(s["avg_response_ms"] for s in sessions) / len(sessions), 1)
+    avg_response_ms = round(sum(_response_time(s) for s in sessions) / len(sessions), 1)
 
     by_day: dict[str, list[dict]] = {}
     for s in sessions:
@@ -87,15 +100,15 @@ async def get_patient_performance(patient_id: str, days: int = 7):
 
     trend = []
     for day, day_sessions in sorted(by_day.items())[-days:]:
-        d_correct = sum(s["correct"] for s in day_sessions)
-        d_errors = sum(s["errors"] for s in day_sessions)
+        d_correct = sum(s.get("correct", 0) for s in day_sessions)
+        d_errors = sum(s.get("errors", 0) for s in day_sessions)
         d_attempts = d_correct + d_errors
         trend.append({
             "date": day,
             "games_completed": len(day_sessions),
             "accuracy_pct": round((d_correct / d_attempts) * 100, 1) if d_attempts else 0,
             "error_rate_pct": round((d_errors / d_attempts) * 100, 1) if d_attempts else 0,
-            "avg_response_ms": round(sum(s["avg_response_ms"] for s in day_sessions) / len(day_sessions), 1),
+            "avg_response_ms": round(sum(_response_time(s) for s in day_sessions) / len(day_sessions), 1),
         })
 
     return {
