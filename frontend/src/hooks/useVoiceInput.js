@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
+import { LOCALE_MAP } from '../utils/voiceService.js'
 
 const SpeechRecognitionImpl =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null
 
-export function useVoiceInput(onResult) {
+export function useVoiceInput(onResult, language = 'en') {
   const [listening, setListening] = useState(false)
   const recognitionRef = useRef(null)
 
@@ -12,7 +13,7 @@ export function useVoiceInput(onResult) {
   function start() {
     if (!supported || listening) return
     const recognition = new SpeechRecognitionImpl()
-    recognition.lang = 'en-IN'
+    recognition.lang = LOCALE_MAP[language] || LOCALE_MAP.en
     recognition.interimResults = false
     recognition.maxAlternatives = 1
 

@@ -5,10 +5,24 @@
 
 export const CULTURES = [
   { code: 'en', label: 'General NER' },
+  { code: 'hi', label: 'Hindi' },
   { code: 'as', label: 'Assamese' },
   { code: 'mni', label: 'Manipuri' },
   { code: 'mz', label: 'Mizo' },
 ]
+
+// Music Memory and Remember My Story both narrow their culture/style picker
+// down to just 2 choices: the patient's own registered UI language, plus
+// Hindi as the second fixed option. If the patient's language already IS
+// Hindi (or has no dedicated culture entry), General NER fills the second
+// slot instead so the two options are never identical.
+export function twoCultureOptions(language) {
+  const primary = CULTURES.find((c) => c.code === language) || CULTURES.find((c) => c.code === 'en')
+  const secondary = primary.code === 'hi'
+    ? CULTURES.find((c) => c.code === 'en')
+    : CULTURES.find((c) => c.code === 'hi')
+  return [primary, secondary]
+}
 
 // ---------------- Remember My Story — reminiscence cards ----------------
 // Each card: theme category, emoji illustration, and a gentle prompt question.
@@ -45,30 +59,45 @@ export const REMINISCENCE_CARDS = {
     { theme: 'Puanchei', emoji: '🧣', prompt: 'Ni pawimawh takah hian puan hi i silh ṭhin em?' },
     { theme: 'Food', emoji: '🥘🎍', prompt: 'Bekang ei hi i duh em?' },
   ],
+  hi: [
+    { theme: 'Diwali Festival', emoji: '🪔🎉', prompt: 'क्या यह आपको दिवाली की याद दिलाता है?' },
+    { theme: 'Village life', emoji: '🏘️🌄', prompt: 'क्या आप ऐसे ही किसी गाँव में बड़े हुए थे?' },
+    { theme: 'Farming', emoji: '🌾👨‍🌾', prompt: 'क्या आपको खेतों में काम करना याद है?' },
+    { theme: 'Clothing', emoji: '🧵👘', prompt: 'क्या आपने खास मौकों पर ऐसे कपड़े पहने थे?' },
+    { theme: 'Food', emoji: '🍛🥘', prompt: 'क्या यह आपके पसंदीदा घर के खाने की याद दिलाता है?' },
+    { theme: 'Landscape', emoji: '⛰️🌿', prompt: 'क्या यह पहाड़ी इलाका आपको घर की याद दिलाता है?' },
+  ],
 }
 
 // ---------------- Music & Memory — track metadata ----------------
-// audioSrc points to a file that does not exist yet in this repo — see
-// frontend/public/audio/README.md for exactly which files to drop in.
+// audioSrc points to files that don't exist yet in this repo — see
+// frontend/public/songs/README.md for exactly which files to drop in.
+// The Song Recognition game shows a friendly "audio coming soon" fallback
+// until each file exists, so missing audio never blocks the game.
 export const MUSIC_TRACKS = {
   en: [
-    { title: 'Folk melody 1', audioSrc: '/audio/music-memory/en/1.mp3' },
-    { title: 'Folk melody 2', audioSrc: '/audio/music-memory/en/2.mp3' },
-    { title: 'Folk melody 3', audioSrc: '/audio/music-memory/en/3.mp3' },
+    { title: 'Folk melody 1', audioSrc: '/songs/general/1.mp3' },
+    { title: 'Folk melody 2', audioSrc: '/songs/general/2.mp3' },
+    { title: 'Folk melody 3', audioSrc: '/songs/general/3.mp3' },
   ],
   as: [
-    { title: 'Assamese Bihu song 1', audioSrc: '/audio/music-memory/as/1.mp3' },
-    { title: 'Assamese Bihu song 2', audioSrc: '/audio/music-memory/as/2.mp3' },
-    { title: 'Assamese folk song 3', audioSrc: '/audio/music-memory/as/3.mp3' },
+    { title: 'Assamese Bihu song 1', audioSrc: '/songs/assamese/1.mp3' },
+    { title: 'Assamese Bihu song 2', audioSrc: '/songs/assamese/2.mp3' },
+    { title: 'Assamese folk song 3', audioSrc: '/songs/assamese/3.mp3' },
   ],
   mni: [
-    { title: 'Manipuri folk song 1', audioSrc: '/audio/music-memory/mni/1.mp3' },
-    { title: 'Manipuri folk song 2', audioSrc: '/audio/music-memory/mni/2.mp3' },
-    { title: 'Manipuri folk song 3', audioSrc: '/audio/music-memory/mni/3.mp3' },
+    { title: 'Manipuri folk song 1', audioSrc: '/songs/manipuri/1.mp3' },
+    { title: 'Manipuri folk song 2', audioSrc: '/songs/manipuri/2.mp3' },
+    { title: 'Manipuri folk song 3', audioSrc: '/songs/manipuri/3.mp3' },
   ],
   mz: [
-    { title: 'Mizo hla 1', audioSrc: '/audio/music-memory/mz/1.mp3' },
-    { title: 'Mizo hla 2', audioSrc: '/audio/music-memory/mz/2.mp3' },
-    { title: 'Mizo hla 3', audioSrc: '/audio/music-memory/mz/3.mp3' },
+    { title: 'Mizo hla 1', audioSrc: '/songs/mizo/1.mp3' },
+    { title: 'Mizo hla 2', audioSrc: '/songs/mizo/2.mp3' },
+    { title: 'Mizo hla 3', audioSrc: '/songs/mizo/3.mp3' },
+  ],
+  hi: [
+    { title: 'Hindi folk song 1', audioSrc: '/songs/hindi/1.mp3' },
+    { title: 'Hindi folk song 2', audioSrc: '/songs/hindi/2.mp3' },
+    { title: 'Hindi folk song 3', audioSrc: '/songs/hindi/3.mp3' },
   ],
 }

@@ -50,25 +50,41 @@ class PatientOut(BaseModel):
 
 
 # ---------------- Game ----------------
+# Field names/shape here must match the frontend's standardized result
+# object exactly (see frontend/src/hooks/useLocalGameResult.js) — every game
+# screen builds this same shape regardless of which game it is.
 
 class GameResultRequest(BaseModel):
     patient_id: str
-    game_type: str
+    game_id: str
     difficulty: str
-    score: int
+    rounds: int
     correct: int
+    incorrect: int
     errors: int
-    avg_response_ms: float
+    accuracy: int
+    precision: int
+    error_rate: int
+    average_response_time: float
+    score: int
+    completed: bool = True
+    timestamp: Optional[datetime] = None  # client-supplied; server fills in if missing
 
 
 class GameSessionOut(BaseModel):
     session_id: str
-    game_type: str
+    game_id: str
     difficulty: str
-    score: int
+    rounds: int
     correct: int
+    incorrect: int
     errors: int
-    avg_response_ms: float
+    accuracy: int
+    precision: int
+    error_rate: int
+    average_response_time: float
+    score: int
+    completed: bool
     timestamp: datetime
 
 
@@ -104,10 +120,15 @@ class MessageCreateRequest(BaseModel):
     text: str
 
 
+class MessageUpdateRequest(BaseModel):
+    read: bool
+
+
 class MessageOut(BaseModel):
     message_id: str
     patient_id: str
     text: str
+    read: bool
     timestamp: datetime
 
 

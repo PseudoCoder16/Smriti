@@ -1,64 +1,145 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
 import PatientTopbar from '../../../components/PatientTopbar.jsx'
+import DifficultyPicker from '../../../components/DifficultyPicker.jsx'
+import ResultsPanel from '../../../components/ResultsPanel.jsx'
 import ResponseButtons from '../../../components/ResponseButtons.jsx'
-import { CULTURES, REMINISCENCE_CARDS } from '../../../data/culturalContent.js'
+import { twoCultureOptions } from '../../../data/culturalContent.js'
+import { getFamilyMemoryCards } from '../../../data/familyMemoryContent.js'
+import { useAuth } from '../../../context/AuthContext.jsx'
 import { useSettings } from '../../../context/SettingsContext.jsx'
+import { useLocalGameResult } from '../../../hooks/useLocalGameResult.js'
+import { matchYesNoIntent } from '../../../utils/voiceService.js'
+
+// Difficulty controls how many distinct story cards are drawn from the
+// culture's pool before being cycled to fill the standardized 5 rounds.
+const DIFF = {
+  easy: { distinct: 2, sub: 'A few themes repeated' },
+  medium: { distinct: 4, sub: 'More variety' },
+  hard: { distinct: 5, sub: 'Maximum variety' },
+}
+const TOTAL_ROUNDS = 5
+
+// Unlike Music Memory's fully-shuffled playlist, this keeps `pool`'s given
+// order (personalized family cards first, then generic culture cards, per
+// getFamilyMemoryCards) so personalized cards are the ones actually shown
+// in the earliest rounds rather than being randomized away.
+function buildPlaylist(pool, distinctCount) {
+  const subset = pool.slice(0, Math.min(distinctCount, pool.length))
+  return Array.from({ length: TOTAL_ROUNDS }, (_, i) => subset[i % subset.length])
+}
 
 export default function RememberMyStory() {
-  const navigate = useNavigate()
-  const { language } = useSettings()
-  const [culture, setCulture] = useState(CULTURES.some((c) => c.code === language) ? language : 'en')
-  const [index, setIndex] = useState(0)
+  const { session } = useAuth()
+  const { language, t } = useSettings()
+  const record = useLocalGameResult('family_memory')
+
+  // Only 2 style choices: the patient's own language, plus Hindi — same
+  // logic as Music Memory (see twoCultureOptions).
+  const cultureOptions = twoCultureOptions(language)
+  const [culture, setCulture] = useState(cultureOptions[0].code)
+  const [phase, setPhase] = useState('diff') // diff | play | results
+  const [difficulty, setDifficulty] = useState(null)
+  const [round, setRound] = useState(0)
   const [transcript, setTranscript] = useState('')
-  const [done, setDone] = useState(false)
+  const [result, setResult] = useState(null)
 
-  const cards = REMINISCENCE_CARDS[culture]
-  const card = cards[index]
+  const stats = useRef({ correct: 0, incorrect: 0, times: [] })
+  const playlistRef = useRef([])
+  const roundStart = useRef(0)
 
-  function answer() {
+  function start(diff) {
+    stats.current = { correct: 0, incorrect: 0, times: [] }
+    setDifficulty(diff)
+    const cards = getFamilyMemoryCards({ patientId: session?.patient_id, culture })
+    playlistRef.current = buildPlaylist(cards, DIFF[diff].distinct)
     setTranscript('')
-    if (index + 1 < cards.length) {
-      setIndex(index + 1)
+    setRound(1)
+    setPhase('play')
+    roundStart.current = performance.now()
+  }
+
+  function answer(value) {
+    const rt = performance.now() - roundStart.current
+    if (value === 'yes') stats.current.correct++
+    else stats.current.incorrect++
+    stats.current.times.push(rt)
+    setTranscript('')
+
+    if (round >= TOTAL_ROUNDS) {
+      finish(difficulty)
     } else {
-      setDone(true)
+      setRound((r) => r + 1)
+      roundStart.current = performance.now()
     }
+  }
+
+  async function finish(diff) {
+    const res = await record({
+      difficulty: diff,
+      rounds: TOTAL_ROUNDS,
+      correct: stats.current.correct,
+      incorrect: stats.current.incorrect,
+      times: stats.current.times,
+    })
+    setResult({ score: res.score, avgResponseMs: res.average_response_time, correct: res.correct, errors: res.errors })
+    setPhase('results')
   }
 
   function restart(newCulture) {
     setCulture(newCulture)
-    setIndex(0)
+    setDifficulty(null)
+    setRound(0)
     setTranscript('')
-    setDone(false)
+    setResult(null)
+    setPhase('diff')
   }
+
+  const card = playlistRef.current[round - 1]
 
   return (
     <div className="min-h-screen">
-      <PatientTopbar title="Remember My Story" back="/home" />
+      <PatientTopbar title={t('remember_my_story')} back="/home" />
       <div className="max-w-xl mx-auto px-6 py-8 text-center">
         <label className="block mb-6">
-          <span className="block text-sm font-semibold text-ink-soft mb-2">Choose your background</span>
+          <span className="block text-sm font-semibold text-ink-soft mb-2">{t('story_choose_background')}</span>
           <select value={culture} onChange={(e) => restart(e.target.value)} className="border border-line rounded-lg px-4 py-2">
-            {CULTURES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+            {cultureOptions.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
           </select>
         </label>
 
-        {!done ? (
+        {phase === 'diff' && (
+          <DifficultyPicker
+            options={Object.entries(DIFF).map(([value, d]) => ({ value, label: value, sub: d.sub }))}
+            onSelect={start}
+          />
+        )}
+
+        {phase === 'play' && card && (
           <>
-            <p className="text-sm text-ink-faint mb-2">Story {index + 1} of {cards.length} · {card.theme}</p>
-            <div className="text-7xl mb-6 bg-surface border border-line rounded-2xl py-10">{card.emoji}</div>
+            <div className="inline-block bg-primary-tint text-primary text-sm font-semibold px-4 py-1 rounded-full mb-4">{t('story_word')} {round} / {TOTAL_ROUNDS}</div>
+            <p className="text-sm text-ink-faint mb-2">{card.theme}</p>
+            {card.photo ? (
+              <div className="mb-6 bg-surface border border-line rounded-2xl py-6 flex items-center justify-center">
+                <img src={card.photo} alt="" className="max-h-48 rounded-xl object-cover" />
+              </div>
+            ) : (
+              <div className="text-7xl mb-6 bg-surface border border-line rounded-2xl py-10">{card.emoji}</div>
+            )}
             <p className="text-lg font-semibold text-ink mb-6">{card.prompt}</p>
-            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(t) => { setTranscript(t); answer() }} />
+            <ResponseButtons onAnswer={answer} voiceTranscript={transcript} onVoiceResult={(text) => { setTranscript(text); answer(matchYesNoIntent(text)) }} />
           </>
-        ) : (
-          <div className="flex flex-col items-center gap-6 py-10">
-            <h3 className="text-xl serif">Thank you for sharing! 💛</h3>
-            <p className="text-ink-soft">You went through all {cards.length} stories.</p>
-            <div className="flex gap-3">
-              <button onClick={() => restart(culture)} className="px-6 py-3 rounded-lg bg-primary text-white font-semibold">🔁 Go Again</button>
-              <button onClick={() => navigate('/home')} className="px-6 py-3 rounded-lg text-ink-soft font-semibold">← Back to Home</button>
-            </div>
-          </div>
+        )}
+
+        {phase === 'results' && result && (
+          <ResultsPanel
+            difficulty={difficulty}
+            score={result.score}
+            correct={result.correct}
+            errors={result.errors}
+            avgResponseMs={result.avgResponseMs}
+            onReplay={() => start(difficulty)}
+            onChangeDifficulty={() => setPhase('diff')}
+          />
         )}
       </div>
     </div>

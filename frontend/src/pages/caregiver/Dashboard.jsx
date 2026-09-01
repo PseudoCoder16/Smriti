@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import GamePerformanceChart from '../../components/caregiver/GamePerformanceChart.jsx'
+import AIInsightCard from '../../components/caregiver/AIInsightCard.jsx'
+import GameHistoryTable from '../../components/caregiver/GameHistoryTable.jsx'
+import {
+  mockPerformanceSummary,
+  mockGamePerformance,
+  mockGameHistory,
+  mockAIInsight,
+} from '../../data/caregiverMockData.js'
+import { getFamilyMembers, addFamilyMember, removeFamilyMember } from '../../data/patientFamilyData.js'
 
 const GAME_LABELS = {
   memory_match: 'Memory Match',
@@ -10,7 +20,12 @@ const GAME_LABELS = {
   routine_recall: 'Daily Routine Recall',
   tea_sorting: 'Tea Leaf Sorting',
   rhythm_tap: 'Rhythm & Tap',
+  color_sort: 'Color Sort',
+  song_recognition: 'Music & Memory',
+  family_memory: 'Remember My Story',
 }
+
+const CHECKIN_EMOJI = { Good: '🙂', Okay: '😐', 'Not Good': '🙁' }
 
 function Field({ label, ...props }) {
   return (
@@ -41,6 +56,7 @@ export default function Dashboard() {
   const [games, setGames] = useState([])
   const [medicine, setMedicine] = useState([])
   const [messages, setMessages] = useState([])
+  const [latestCheckin, setLatestCheckin] = useState(null)
 
   const [showAddPatient, setShowAddPatient] = useState(false)
   const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: 'Female', language: 'Assamese', username: '', pin: '' })
@@ -49,6 +65,9 @@ export default function Dashboard() {
   const [note, setNote] = useState('')
   const [error, setError] = useState('')
 
+  const [familyMembers, setFamilyMembers] = useState([])
+  const [newMember, setNewMember] = useState({ name: '', relation: '', hobbyOrSong: '', photoDataUrl: '' })
+
   async function loadPatients() {
     const res = await api.get('/patient', session.token)
     setPatients(res.patients)
@@ -56,18 +75,42 @@ export default function Dashboard() {
   }
 
   async function loadPatientData(id) {
-    const [p, pf, g, m, msgs] = await Promise.all([
+    const [p, pf, g, m, msgs, ci] = await Promise.all([
       api.get(`/patient/${id}`),
       api.get(`/patient/${id}/performance`),
       api.get(`/patient/${id}/games?limit=8`),
       api.get(`/medicine/${id}`),
       api.get(`/messages/${id}`),
+      api.get(`/checkin/${id}?limit=1`),
     ])
     setProfile(p); setPerf(pf); setGames(g.sessions); setMedicine(m.medicine); setMessages(msgs.messages)
+    setLatestCheckin(ci.checkins[0] || null)
   }
 
   useEffect(() => { loadPatients() }, [])
   useEffect(() => { if (selected) loadPatientData(selected) }, [selected])
+  useEffect(() => { setFamilyMembers(getFamilyMembers(selected)); setNewMember({ name: '', relation: '', hobbyOrSong: '', photoDataUrl: '' }) }, [selected])
+
+  function handlePhotoChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setNewMember((m) => ({ ...m, photoDataUrl: reader.result }))
+    reader.readAsDataURL(file)
+  }
+
+  function submitFamilyMember(e) {
+    e.preventDefault()
+    if (!newMember.name.trim()) return
+    addFamilyMember(selected, newMember)
+    setFamilyMembers(getFamilyMembers(selected))
+    setNewMember({ name: '', relation: '', hobbyOrSong: '', photoDataUrl: '' })
+  }
+
+  function deleteFamilyMember(id) {
+    removeFamilyMember(selected, id)
+    setFamilyMembers(getFamilyMembers(selected))
+  }
 
   const alerts = useMemo(() => {
     if (!perf) return []
@@ -173,6 +216,54 @@ export default function Dashboard() {
           </div>
         )}
 
+        <Panel title="👪 Family Memories — for the Remember My Story game">
+          <p className="text-xs text-ink-faint mb-4">
+            Add photos and details for this patient's family members. The game will ask them
+            personalized questions built from what you add here, before the general culture questions.
+          </p>
+          <form onSubmit={submitFamilyMember} className="grid sm:grid-cols-2 gap-3 mb-4">
+            <Field label="Family member's name" required value={newMember.name} onChange={(e) => setNewMember({ ...newMember, name: e.target.value })} />
+            <Field label="Relation (e.g. Daughter)" value={newMember.relation} onChange={(e) => setNewMember({ ...newMember, relation: e.target.value })} />
+            <Field label="Favourite hobby or song" value={newMember.hobbyOrSong} onChange={(e) => setNewMember({ ...newMember, hobbyOrSong: e.target.value })} />
+            <label className="block mb-3 text-left">
+              <span className="block text-xs font-semibold text-ink-soft mb-1">Photo (optional)</span>
+              <input type="file" accept="image/*" onChange={handlePhotoChange} className="w-full text-sm" />
+            </label>
+            <button type="submit" className="sm:col-span-2 bg-primary text-white rounded-lg text-sm font-semibold py-2">+ Add Family Member</button>
+          </form>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {familyMembers.length === 0 && <p className="text-sm text-ink-faint">No family members added yet.</p>}
+            {familyMembers.map((m) => (
+              <div key={m.id} className="flex items-center gap-3 border border-line rounded-xl p-3">
+                {m.photoDataUrl ? (
+                  <img src={m.photoDataUrl} alt="" className="w-12 h-12 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-primary-tint flex items-center justify-center text-lg shrink-0">👤</div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-sm truncate">{m.name}{m.relation ? ` · ${m.relation}` : ''}</div>
+                  {m.hobbyOrSong && <div className="text-xs text-ink-faint truncate">{m.hobbyOrSong}</div>}
+                </div>
+                <button onClick={() => deleteFamilyMember(m.id)} className="text-xs text-clay font-semibold shrink-0">Remove</button>
+              </div>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel title="❤️ Latest Check-in">
+          {latestCheckin ? (
+            <div className="flex items-center gap-4">
+              <span className="text-4xl">{CHECKIN_EMOJI[latestCheckin.mood] || '💬'}</span>
+              <div>
+                <div className="font-semibold">{latestCheckin.mood}</div>
+                <div className="text-xs text-ink-faint">{new Date(latestCheckin.timestamp).toLocaleString()}</div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-ink-faint">No check-in recorded yet.</p>
+          )}
+        </Panel>
+
         {perf && (
           <div className="grid sm:grid-cols-4 gap-4">
             <StatCard value={perf.games_completed} label="Games completed" />
@@ -181,6 +272,29 @@ export default function Dashboard() {
             <StatCard value={`${(perf.avg_response_ms / 1000).toFixed(1)}s`} label="Avg response time" />
           </div>
         )}
+
+        <Panel title="📊 Performance Summary — Demo data">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <StatCard value={mockPerformanceSummary.gamesCompleted} label="Games completed" />
+            <StatCard value={`${mockPerformanceSummary.accuracy}%`} label="Accuracy" />
+            <StatCard value={`${mockPerformanceSummary.precision}%`} label="Precision" />
+            <StatCard value={`${mockPerformanceSummary.errorRate}%`} label="Error rate" />
+            <StatCard value={`${mockPerformanceSummary.averageResponseTime}s`} label="Avg response time" />
+            <StatCard value={`${mockPerformanceSummary.overallScore}%`} label="Overall score" />
+          </div>
+        </Panel>
+
+        <Panel title="🎮 Game-wise Performance — Demo data">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+            {mockGamePerformance.map((g) => (
+              <div key={g.game_id} className="bg-primary-tint rounded-xl py-3 text-center">
+                <div className="text-lg font-bold text-primary">{g.accuracy}%</div>
+                <div className="text-xs text-ink-faint mt-1">{g.label}</div>
+              </div>
+            ))}
+          </div>
+          <GamePerformanceChart data={mockGamePerformance} />
+        </Panel>
 
         {perf && perf.trend.length > 0 && (
           <div className="grid sm:grid-cols-2 gap-6">
@@ -228,16 +342,22 @@ export default function Dashboard() {
           )}
         </Panel>
 
+        <AIInsightCard insight={mockAIInsight} />
+
         <Panel title="🎮 Recent game sessions">
           <div className="flex flex-col gap-2">
             {games.length === 0 && <p className="text-sm text-ink-faint">No game sessions recorded yet.</p>}
             {games.map((g) => (
               <div key={g.session_id} className="flex justify-between text-sm border-b border-line last:border-0 py-2">
-                <span>{GAME_LABELS[g.game_type] || g.game_type} <span className="text-ink-faint">({g.difficulty})</span></span>
+                <span>{GAME_LABELS[g.game_id] || g.game_id} <span className="text-ink-faint">({g.difficulty})</span></span>
                 <span className="font-semibold">{g.score}%</span>
               </div>
             ))}
           </div>
+        </Panel>
+
+        <Panel title="📋 Game History — Demo data">
+          <GameHistoryTable entries={mockGameHistory} />
         </Panel>
 
         <Panel title="💊 Medicine">
@@ -252,7 +372,7 @@ export default function Dashboard() {
               <div key={m.medicine_id} className="flex justify-between items-center text-sm border-b border-line last:border-0 py-2">
                 <span>{m.name} · {m.time}</span>
                 <span className={m.status === 'taken' ? 'text-primary font-semibold' : 'text-accent-dark font-semibold'}>
-                  {m.status === 'taken' ? '✓ Taken' : '⏳ Pending'}
+                  {m.status === 'taken' ? '✓ Taken' : m.status === 'remind_later' ? '🔔 Remind Later' : '⏳ Pending'}
                 </span>
               </div>
             ))}
