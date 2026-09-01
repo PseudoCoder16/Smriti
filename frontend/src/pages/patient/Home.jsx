@@ -1,18 +1,15 @@
-import { useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import AlertsPopover from '../../components/AlertsPopover.jsx'
-import DailyCheckinPopup from '../../components/DailyCheckinPopup.jsx'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import ProfileMenu from '../../components/ProfileMenu.jsx'
 import ReminderStrip from '../../components/ReminderStrip.jsx'
 import TiltedCard from '../TiltedCard.jsx'
+import { api } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useSettings } from '../../context/SettingsContext.jsx'
 import { LANGUAGES } from '../../i18n/translations.js'
 import { speak } from '../../utils/voiceService.js'
 
-// Same 5 games, same images/colors, same descriptions as the public Landing
-// page's "Inside the Platform" section — kept as the single source of truth
-// there; this array only supplies the route + translation key each maps to.
 function useGameTiles(t) {
   return [
     {
@@ -20,37 +17,46 @@ function useGameTiles(t) {
       title: t('music_memory'),
       desc: 'Recall melodies from your past and match familiar tunes to strengthen auditory memory.',
       bgColor: '#C8E6C9',
-      img: 'https://lh3.googleusercontent.com/aida/AEtjO1WORpLxeo0narmz-Xgsz8r5jWtM7azxr-1RiYAfkyEUdGIsKh94ydE1BixdbN8RkvqMm2deMiJLaqfqKAPG0DkrGIXicWRHvCk-Cn48TvMQWO2pilqYMES40zHlQkamNFf0Xx3DDOezSkzNvpYGq14_clV53tPV8TrjQD-vAJ2DayA4O3LHJmpw-igaB0SGfv_fW5gdV0duhpY6HFuiGRYUBevlagvC2wWO95dOewIsBY8SYDyITLFcUck',
+      img: '/images/games/music-memory.jpg',
     },
     {
       to: '/games/remember-my-story',
       title: t('remember_my_story'),
       desc: 'Identify family members and loved ones through photos to reinforce facial recognition.',
       bgColor: '#BBDEFB',
-      img: 'https://lh3.googleusercontent.com/aida/AEtjO1WgceprIvRHAQxQ6jN7SCJeIUyRzzKf2G85Zg1m_05k_klDHI1YCYcjlUplRRyhXma_I2N4K_vS8I8MpMsdnARasFGoiMIQLYx-D_ZbyzmE0IzJwNhzqTTnCGtFEIZPtXRcQT5cMBUXOtetvjJADyTsx6c2JbhcU0fZ4m9ppGZVmULaj9xv2lgSP_JPJZLuZ7uPghZjpiTsk8DpBt7bU0No7NnC_LWDdE0H1BIl0LMKFt6N-zXxTWiUfC0',
+      img: '/images/games/remember-story.jpg',
     },
     {
       to: '/games/color-sort',
       title: t('color_sort'),
       desc: 'Sort objects by color and shape to sharpen visual discrimination and attention.',
       bgColor: '#FFE0B2',
-      img: 'https://lh3.googleusercontent.com/aida/AEtjO1WTKtNfLjDoYY4JFdkkn5Iz811kHMJgw3KcKlhHZDWo_2qCNzF04sU6zbk82PMDVhaEvULRBDwAOZUoi_2Gsy1K_ufPs9d4Y38AOMGRDn7PpCfeHWjZs0J-Dym4GX7SXlyIbDRHHXX6Uv5FDuPeiM7ur_tOjUP9F4zSf1om6OCSK4rC9rnR9uSebYf13svf_PrZsknxV_rrp44f1SslI9FJbkPXn-sOwV9x9XinhFrwUmI4-11oAfke354',
+      img: '/images/games/color-sort.jpg',
     },
     {
       to: '/games/rhythm-tap',
       title: t('rhythm_tap'),
       desc: 'Follow rhythmic patterns and tap along to exercise motor timing and coordination.',
       bgColor: '#F8BBD0',
-      img: 'https://lh3.googleusercontent.com/aida/AEtjO1VtXZpVzXePs_KGuJLm_9NTRtPriBQ_EzZoteaCQnxYxm0-IX8J6arObNw4j2VKRHzPZLlTdXv6BD2U2KD6Wg5ZCKwtJjJf8K1grBwlhtBOibVZx6jUWIu8UluM780lsF_vOWO615py0W3uJvY2R8NeUzkXSIiuLSLc91G9E3dLb5y7Br5g8wcNEpNUSu_8P-ORPbonkjO7w9_DUr4NtpcAZslpUijtN9eQzCMp-KVKY9TjKvzr16kGDX4',
+      img: '/images/games/rhythm-tap.jpg',
     },
     {
       to: '/games/pattern',
       title: t('pattern_recognition'),
       desc: 'Spot patterns in sequences and shapes to train attention and cognitive focus.',
       bgColor: '#D1C4E9',
-      img: 'https://lh3.googleusercontent.com/aida/AEtjO1UA2u9MwDfGA37jCJJj2PNr3aU30KbsjVXop5yIdm9LkyrN-0vgo7hi_bNfOnNWlATaHVzfc5F9g4QesQKnhZPZNcRnjwNC7H0qr_DCZju96ee6iEyCDWIL9Zh4Z8UsOTLnnFdWBunSYPBYVLf8aa2FDNZCgJgVqhx2M33THgpXaZPIU9Kx9jB4dkbDHo72V6JoSN3vm3sMIWC8ykhGPI3Gbd1mfXwTxZiCeWnp9OWEoboedi02bhAp6g',
+      img: '/images/games/pattern-recognition.jpg',
     },
   ]
+}
+
+function Stat({ value, label }) {
+  return (
+    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl py-4 text-center">
+      <div className="text-2xl font-bold text-forest">{value}</div>
+      <div className="text-xs text-gray-500 font-medium mt-1">{label}</div>
+    </div>
+  )
 }
 
 export default function Home() {
@@ -59,84 +65,211 @@ export default function Home() {
   const navigate = useNavigate()
   const gameTiles = useGameTiles(t)
 
+  const [perf, setPerf] = useState(null)
+  const [messages, setMessages] = useState(null)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
   const timeGreet = useMemo(() => {
     const hour = new Date().getHours()
     return hour < 12 ? t('good_morning') : hour < 17 ? t('good_afternoon') : t('good_evening')
   }, [t])
-  const first = session.name.split(' ')[0]
+  const first = session?.name?.split(' ')[0] || 'Guest'
 
   useEffect(() => {
     speak(`${timeGreet}, ${first}!`, language)
   }, [timeGreet, first, language])
 
+  useEffect(() => {
+    if (session?.patient_id) {
+      api.get(`/patient/${session.patient_id}/performance`).then(setPerf).catch(() => setPerf({
+        games_completed: 0, accuracy_pct: 0, avg_response_ms: 0, trend: []
+      }))
+      api.get(`/messages/${session.patient_id}`).then((res) => setMessages(res.messages)).catch(() => setMessages([]))
+    }
+  }, [session?.patient_id])
+
+  async function markRead(messageId) {
+    setMessages((msgs) => msgs.map((m) => (m.message_id === messageId ? { ...m, read: true } : m)))
+    try {
+      await api.put(`/message/${messageId}`, { read: true })
+    } catch (err) {
+      console.warn('[messages] failed to save read status', err)
+    }
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <DailyCheckinPopup />
-      <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0 gap-4 bg-surface">
-        <div className="min-w-0">
-          <span className="patient-serif text-sm text-primary-dark block mb-1">Smriti</span>
-          <h1 className="text-xl patient-serif leading-tight truncate">{timeGreet} 👋, {first}!</h1>
-          <p className="text-xs text-ink-faint">{t('how_feeling')}</p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <AlertsPopover />
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="text-sm border border-line rounded-full px-3 py-2"
-            aria-label={t('choose_language')}
-          >
-            {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
-          </select>
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <span className="text-xs font-semibold text-ink-soft hidden sm:inline">{t('simple_mode')}</span>
-            <span
-              onClick={() => setSimpleMode(!simpleMode)}
-              className={`w-11 h-6 rounded-full flex items-center px-0.5 transition ${simpleMode ? 'bg-primary justify-end' : 'bg-line justify-start'}`}
-            >
-              <span className="w-5 h-5 rounded-full bg-white shadow" />
-            </span>
-          </label>
-          <ProfileMenu />
-        </div>
-      </div>
+    <div className="patient-dashboard antialiased min-h-screen flex flex-col">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        .patient-dashboard {
+          font-family: 'Inter', sans-serif;
+          background-color: #f9f8f3;
+          color: #1f2937;
+        }
+        
+        .patient-dashboard h1, .patient-dashboard h2, .patient-dashboard h3, .patient-dashboard .font-serif-custom {
+          font-family: 'Playfair Display', serif;
+        }
+        
+        .text-gold { color: #C1A063; }
+        .bg-forest { background-color: #1B3022; }
+        .text-forest { color: #1B3022; }
+      `}</style>
 
-      <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-8" style={{ background: 'linear-gradient(180deg, #f9f8f3 0%, #ffffff 100%)' }}>
-        <div className="max-w-6xl mx-auto">
-          <p className="text-xs font-bold text-accent tracking-[0.2em] uppercase mb-4 text-center">{t('play')}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 justify-items-center mb-10">
-            {gameTiles.map((g) => (
-              <TiltedCard
-                key={g.to}
-                imageSrc={g.img}
-                altText={g.title}
-                title={g.title}
-                description={g.desc}
-                bgColor={g.bgColor}
-                rotateAmplitude={10}
-                scaleOnHover={1.04}
-                onClick={() => navigate(g.to)}
-              />
-            ))}
+      {/* Header — matches landing page style */}
+      <header className="w-full py-5 px-4 md:px-8 sticky top-0 z-50 backdrop-blur-md bg-white/50 border-b border-[#C1A063]/10">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="text-3xl font-serif-custom font-bold tracking-tight text-forest">
+              <span className="text-black">smri</span><span className="text-gold">ti</span>
+            </Link>
+            <h1 className="text-lg font-serif-custom font-semibold text-forest hidden sm:block">{timeGreet} 👋, {first}!</h1>
           </div>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => navigate('/checkin')}
-              className="flex items-center gap-3 bg-surface border border-line rounded-full px-6 py-3 hover:border-primary hover:bg-primary-tint transition shadow-sm"
+          <div className="flex items-center gap-4">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="text-sm font-medium border border-gray-200 rounded-full px-4 py-2 bg-white text-gray-700 focus:outline-none focus:border-[#1B3022]"
+              aria-label={t('choose_language')}
             >
-              <span className="text-2xl">❤️</span>
-              <span className="text-sm font-semibold">{t('checkin')}</span>
-            </button>
-            <button
-              onClick={() => navigate('/progress')}
-              className="flex items-center gap-3 bg-surface border border-line rounded-full px-6 py-3 hover:border-primary hover:bg-primary-tint transition shadow-sm"
-            >
-              <span className="text-2xl">🏆</span>
-              <span className="text-sm font-semibold">{t('progress')}</span>
-            </button>
+              {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
+            </select>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <span className="text-sm font-semibold text-gray-600 hidden md:inline">{t('simple_mode')}</span>
+              <span
+                onClick={() => setSimpleMode(!simpleMode)}
+                className={`w-11 h-6 rounded-full flex items-center px-0.5 transition-colors ${simpleMode ? 'bg-[#1B3022] justify-end' : 'bg-gray-300 justify-start'}`}
+              >
+                <span className="w-5 h-5 rounded-full bg-white shadow-sm" />
+              </span>
+            </label>
+            <ProfileMenu />
           </div>
         </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+
+        {/* Games Section — exact same layout as Landing.jsx */}
+        <section className="py-12 md:py-20 px-4 md:px-8 bg-white">
+          <div className="max-w-6xl mx-auto text-center">
+            <p className="text-xs font-bold text-gold tracking-[0.2em] uppercase mb-3">PLAY</p>
+
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 justify-items-center">
+              {gameTiles.map((g) => (
+                <TiltedCard
+                  key={g.to}
+                  imageSrc={g.img}
+                  altText={g.title}
+                  title={g.title}
+                  bgColor={g.bgColor}
+                  rotateAmplitude={12}
+                  scaleOnHover={1.05}
+                  onClick={() => navigate(g.to)}
+                  hoverReveal={true}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Progress Section */}
+        <section className="py-12 md:py-20 px-4 md:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <p className="text-xs font-bold text-gold tracking-[0.2em] uppercase mb-3">Your Journey</p>
+              <h2 className="text-4xl md:text-5xl font-serif-custom font-bold text-forest mb-4 leading-tight">My Progress</h2>
+            </div>
+
+            {!perf ? (
+              <p className="text-gray-500 text-center">Loading progress...</p>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+                  <Stat value={perf.games_completed} label={t('games_played')} />
+                  <Stat value={`${perf.accuracy_pct}%`} label={t('accuracy')} />
+                  <Stat value={`${(perf.avg_response_ms / 1000).toFixed(1)}s`} label={t('avg_response')} />
+                </div>
+
+                {perf.trend && perf.trend.length > 0 && (
+                  <div className="h-56 bg-white rounded-2xl p-4 border border-[#C1A063]/20 shadow-sm">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={perf.trend}>
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6B7280' }} axisLine={false} tickLine={false} />
+                        <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#6B7280' }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                        <Line type="monotone" dataKey="accuracy_pct" stroke="#1B3022" strokeWidth={3} dot={{ r: 4, fill: '#1B3022', strokeWidth: 0 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Floating Caregiver Chatbox */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="w-14 h-14 bg-[#1B3022] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#27473b] transition-all relative"
+        >
+          <span className="text-2xl">💬</span>
+          {messages?.some(m => !m.read) && (
+            <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 border-2 border-white rounded-full"></span>
+          )}
+        </button>
+
+        {isChatOpen && (
+          <div className="absolute bottom-16 right-0 w-[350px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col mb-4">
+            <div className="p-4 bg-[#1B3022] text-white flex justify-between items-center">
+              <h2 className="font-serif-custom font-bold text-lg">{t('message_from_caregiver')}</h2>
+              <button onClick={() => setIsChatOpen(false)} className="text-white/80 hover:text-white text-xl">✕</button>
+            </div>
+
+            <div className="p-4 flex flex-col gap-3 max-h-[400px] overflow-y-auto bg-[#f9f8f3]">
+              {messages === null && <p className="text-gray-500 text-center py-4">Loading messages...</p>}
+              {messages?.length === 0 && (
+                <div className="text-center py-8">
+                  <span className="text-3xl block mb-2">📬</span>
+                  <p className="text-gray-500 font-medium text-sm">No messages yet.</p>
+                </div>
+              )}
+              {messages?.map((m) => (
+                <div key={m.message_id} className={`p-3 rounded-2xl shadow-sm border ${m.read ? 'bg-white border-gray-100' : 'bg-white border-[#C1A063] ring-1 ring-[#C1A063]'}`}>
+                  <div className="flex gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-[#1B3022]/10 flex items-center justify-center shrink-0">
+                      <span className="text-sm">👩‍⚕️</span>
+                    </div>
+                    <div>
+                      <p className="text-gray-800 font-medium text-sm">{m.text}</p>
+                      <p className="text-xs text-gray-400 mt-1">{new Date(m.timestamp).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 justify-end mt-2">
+                    <button
+                      onClick={() => speak(m.text, language)}
+                      className="px-2 py-1 rounded-md bg-[#1B3022]/10 text-[#1B3022] text-xs font-bold hover:bg-[#1B3022]/20 transition-colors"
+                    >
+                      🔊 {t('listen')}
+                    </button>
+                    <button
+                      onClick={() => markRead(m.message_id)}
+                      disabled={m.read}
+                      className={`px-2 py-1 rounded-md text-xs font-bold transition-colors ${m.read ? 'bg-gray-100 text-gray-400' : 'bg-[#1B3022] text-white hover:bg-[#27473b]'}`}
+                    >
+                      {m.read ? `✔️ ${t('got_it')}` : t('got_it')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <ReminderStrip />
