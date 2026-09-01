@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import TiltedCard from './TiltedCard';
+import ContinuousWallpaperBackground from '../components/ContinuousWallpaperBackground.jsx';
 
 export default function Landing() {
   return (
@@ -73,8 +74,9 @@ export default function Landing() {
       </header>
 
       <main className="flex-grow">
-        <section className="py-16 md:py-24 px-4 md:px-8 text-center flex flex-col items-center justify-center section-transition">
-          <div className="max-w-3xl mx-auto">
+        <section className="relative overflow-hidden py-16 md:py-24 px-4 md:px-8 text-center flex flex-col items-center justify-center section-transition">
+          <ContinuousWallpaperBackground />
+          <div className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-7xl md:text-9xl font-serif-custom font-bold mb-2 tracking-tight leading-none">
               <span className="text-forest">smr</span><span className="text-gold">iti</span>
             </h1>
