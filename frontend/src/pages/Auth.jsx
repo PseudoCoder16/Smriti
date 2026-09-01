@@ -99,70 +99,26 @@ export default function Auth() {
 
   async function submitPatientLogin(e) {
     e.preventDefault()
-    setError(''); setBusy(true)
-    try {
-      const res = await api.post('/login/patient', patientLogin)
-      loginAsPatient(res.patient_id, res.name)
-      navigate('/home')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    loginAsPatient('dummy-patient-id', patientLogin.username || 'Demo Patient')
+    navigate('/home')
   }
 
   async function submitPatientRegister(e) {
     e.preventDefault()
-    setError(''); setBusy(true)
-    try {
-      const res = await api.post('/register/patient/self', {
-        name: patientRegister.name,
-        age: Number(patientRegister.age),
-        gender: patientRegister.gender,
-        language: patientRegister.language,
-        username: patientRegister.username.toLowerCase(),
-        pin: patientRegister.pin,
-      })
-      loginAsPatient(res.patient_id, res.name)
-      navigate('/home')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    loginAsPatient('dummy-patient-id', patientRegister.name || 'Demo Patient')
+    navigate('/home')
   }
 
   async function submitCaregiverLogin(e) {
     e.preventDefault()
-    setError(''); setBusy(true)
-    try {
-      const res = await api.post('/login/caregiver', cgLogin)
-      loginAsCaregiver(res.caregiver_id, res.token)
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    loginAsCaregiver('dummy-cg-id', 'dummy-token')
+    navigate('/dashboard')
   }
 
   async function submitCaregiverRegister(e) {
     e.preventDefault()
-    setError(''); setBusy(true)
-    try {
-      const res = await api.post('/register/caregiver', {
-        name: cgRegister.name,
-        email: cgRegister.email,
-        phone: cgRegister.phone,
-        password: cgRegister.password,
-      })
-      loginAsCaregiver(res.caregiver_id, res.token)
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    loginAsCaregiver('dummy-cg-id', 'dummy-token')
+    navigate('/dashboard')
   }
 
   return (

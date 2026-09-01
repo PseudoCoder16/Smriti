@@ -9,7 +9,7 @@ export default function PatientTopbar({ title, back = '/home' }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-line bg-surface flex-wrap">
       <div className="flex items-center gap-3 min-w-0">
-        <Link to="/home" className="patient-serif text-lg text-primary-dark shrink-0" aria-label="Smriti home">
+        <Link to="/" className="patient-serif text-lg text-primary-dark shrink-0" aria-label="Smriti home">
           Smriti
         </Link>
         <button

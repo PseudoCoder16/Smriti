@@ -9,6 +9,7 @@ export default function TiltedCard({
   rotateAmplitude = 12,
   scaleOnHover = 1.05,
   onClick,
+  hoverReveal = false,
 }) {
   const cardRef = useRef(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -67,13 +68,13 @@ export default function TiltedCard({
         >
           {/* Top colored section with image */}
           <div
-            className="relative flex items-center justify-center pt-6 pb-10"
+            className="relative flex items-center justify-center p-4"
             style={{ background: bgColor }}
           >
             <img
               src={imageSrc}
               alt={altText}
-              className="w-28 h-28 object-contain drop-shadow-xl relative z-10"
+              className="w-full h-32 object-cover rounded-xl drop-shadow-xl relative z-10"
               style={{ transform: 'translateZ(30px)' }}
             />
           </div>
@@ -86,25 +87,19 @@ export default function TiltedCard({
             >
               {title}
             </h3>
-            <p className="text-xs text-gray-500 leading-relaxed mb-4">
-              {description}
-            </p>
-
-            {/* Arrow button */}
-            <div className="flex justify-end">
-              <div className="w-8 h-8 rounded-full bg-[#1B3022] flex items-center justify-center text-white shadow-md hover:bg-[#27473b] transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
+            <div
+              className="overflow-hidden transition-all duration-300 ease-in-out"
+              style={{
+                maxHeight: hoverReveal ? (isHovered ? '80px' : '0px') : '80px',
+                opacity: hoverReveal ? (isHovered ? 1 : 0) : 1,
+              }}
+            >
+              <p className="text-xs text-gray-500 leading-relaxed mb-4">
+                {description}
+              </p>
             </div>
+
+
           </div>
         </div>
       </div>

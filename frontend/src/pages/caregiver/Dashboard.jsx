@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
@@ -166,7 +166,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       <div className="bg-primary-dark text-white px-6 py-4 flex items-center justify-between">
-        <span className="serif text-lg">Smriti <span className="font-sans font-medium opacity-70 text-sm">— Caregiver View</span></span>
+        <span className="serif text-lg"><Link to="/" className="hover:opacity-80 transition-opacity">Smriti</Link> <span className="font-sans font-medium opacity-70 text-sm">— Caregiver View</span></span>
         <div className="flex items-center gap-4">
           <select value={selected || ''} onChange={(e) => setSelected(e.target.value)} className="text-ink text-sm rounded-lg px-3 py-2">
             {patients.map((p) => <option key={p.patient_id} value={p.patient_id}>{p.name}</option>)}
