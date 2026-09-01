@@ -6,29 +6,19 @@ import ReminderStrip from '../../components/ReminderStrip.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useSettings } from '../../context/SettingsContext.jsx'
 import { LANGUAGES } from '../../i18n/translations.js'
+import { speak } from '../../utils/speak.js'
 
-// The 3rd patient game is still to be specified — only the 2 confirmed ones
-// are shown for now. The 5 old arcade-style games stay in the codebase
-// (routes still work) but are unlinked from the dashboard per project decision.
+// Phase 1 roster: the 2 reminiscence games plus the 3 newly finished cognitive
+// games. Memory Match, Daily Routine Recall and Tea Leaf Sorting stay in the
+// codebase (routes still work) but are no longer surfaced here.
 function useGameTiles(t) {
   return [
     { emoji: '🎵', label: t('music_memory'), to: '/games/music-memory' },
     { emoji: '📖', label: t('remember_my_story'), to: '/games/remember-my-story' },
+    { emoji: '🎨', label: t('color_sort'), to: '/games/color-sort' },
+    { emoji: '🥁', label: t('rhythm_tap'), to: '/games/rhythm-tap' },
+    { emoji: '🔷', label: t('pattern_recognition'), to: '/games/pattern' },
   ]
-}
-
-function speak(text) {
-  try {
-    if ('speechSynthesis' in window) {
-      const u = new SpeechSynthesisUtterance(text)
-      u.rate = 0.95
-      u.pitch = 1.0
-      window.speechSynthesis.cancel()
-      window.speechSynthesis.speak(u)
-    }
-  } catch {
-    // Web Speech API unavailable — silently skip voice greeting.
-  }
 }
 
 export default function Home() {
@@ -51,6 +41,7 @@ export default function Home() {
     <div className="h-screen overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0 gap-4">
         <div className="min-w-0">
+          <span className="serif text-sm text-primary-dark block mb-1">Smriti</span>
           <h1 className="text-xl serif leading-tight truncate">{timeGreet} 👋, {first}!</h1>
           <p className="text-xs text-ink-faint">{t('how_feeling')}</p>
         </div>
@@ -77,8 +68,8 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden px-6 py-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 h-full">
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {gameTiles.map((g) => (
             <button
               key={g.to}

@@ -2,14 +2,16 @@ import { useRef, useState } from 'react'
 import PatientTopbar from '../../../components/PatientTopbar.jsx'
 import DifficultyPicker from '../../../components/DifficultyPicker.jsx'
 import ResultsPanel from '../../../components/ResultsPanel.jsx'
-import { useGameRecorder } from '../../../hooks/useGameRecorder.js'
+import { useLocalGameResult } from '../../../hooks/useLocalGameResult.js'
+import { useSettings } from '../../../context/SettingsContext.jsx'
 
 const ICONS = ['🔺', '🔵', '⭐', '🟩', '🔶', '🟣', '⬛', '💠', '🔻']
 const DIFF = { easy: { len: 3, sub: '3 shapes' }, medium: { len: 5, sub: '5 shapes' }, hard: { len: 7, sub: '7 shapes' } }
 const TOTAL_ROUNDS = 5
 
 export default function PatternGame() {
-  const record = useGameRecorder('pattern_recognition')
+  const record = useLocalGameResult('pattern_recognition')
+  const { t } = useSettings()
   const [phase, setPhase] = useState('diff')
   const [difficulty, setDifficulty] = useState(null)
   const [round, setRound] = useState(0)
@@ -38,7 +40,7 @@ export default function PatternGame() {
     roundHasError.current = false
     sequence.current = Array.from({ length: DIFF[diff].len }, () => Math.floor(Math.random() * 9))
     setActive(false)
-    setStatus('Watch carefully…')
+    setStatus(t('pattern_watch_carefully'))
 
     let i = 0
     const interval = setInterval(() => {
@@ -49,7 +51,7 @@ export default function PatternGame() {
         i++
       } else {
         clearInterval(interval)
-        setStatus('Your turn — tap them in order')
+        setStatus(t('pattern_your_turn'))
         roundStart.current = performance.now()
         setActive(true)
       }
@@ -65,7 +67,7 @@ export default function PatternGame() {
         setActive(false)
         if (!roundHasError.current) stats.current.correct++
         stats.current.times.push(performance.now() - roundStart.current)
-        setStatus('Nice! Next round…')
+        setStatus(`${t('great_job')} ${t('next')}…`)
         if (round >= TOTAL_ROUNDS) setTimeout(() => finish(difficulty), 900)
         else setTimeout(() => playRound(difficulty, round), 900)
       }
@@ -78,17 +80,23 @@ export default function PatternGame() {
   }
 
   async function finish(diff) {
-    const { score, avgResponseMs } = await record({ difficulty: diff, ...stats.current })
-    setResult({ score, avgResponseMs, correct: stats.current.correct, errors: stats.current.errors })
+    const res = await record({
+      difficulty: diff,
+      rounds: TOTAL_ROUNDS,
+      correct: stats.current.correct,
+      incorrect: stats.current.errors,
+      times: stats.current.times,
+    })
+    setResult({ score: res.score, avgResponseMs: res.average_response_time, correct: res.correct, errors: res.errors })
     setPhase('results')
   }
 
   return (
     <div className="min-h-screen">
-      <PatientTopbar title="Pattern Recognition" back="/games" />
+      <PatientTopbar title={t('pattern_recognition')} back="/games" />
       <div className="max-w-2xl mx-auto px-6 py-6 text-center">
-        {phase !== 'diff' && <div className="inline-block bg-primary-tint text-primary text-sm font-semibold px-4 py-1 rounded-full mb-4">Round {round} / {TOTAL_ROUNDS}</div>}
-        <p className="text-ink-soft mb-2">Watch the shapes light up, then tap them back in the same order.</p>
+        {phase !== 'diff' && <div className="inline-block bg-primary-tint text-primary text-sm font-semibold px-4 py-1 rounded-full mb-4">{t('round')} {round} / {TOTAL_ROUNDS}</div>}
+        <p className="text-ink-soft mb-2">{t('pattern_instructions')}</p>
 
         {phase === 'diff' && (
           <DifficultyPicker
@@ -99,7 +107,7 @@ export default function PatternGame() {
 
         {phase === 'play' && (
           <>
-            <p className="text-sm text-ink-faint mb-2">Correct: {stats.current.correct} · Errors: {stats.current.errors}</p>
+            <p className="text-sm text-ink-faint mb-2">{t('correct')}: {stats.current.correct} · {t('errors')}: {stats.current.errors}</p>
             <p className="font-semibold text-primary mb-4">{status}</p>
             <div className="grid grid-cols-3 gap-3 justify-center max-w-xs mx-auto">
               {ICONS.map((icon, i) => (

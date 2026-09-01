@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
 
 const GAMES = [
-  { emoji: '🃏', name: 'Memory Match', sub: 'Recall & pairing' },
-  { emoji: '🔷', name: 'Pattern Recognition', sub: 'Attention & focus' },
-  { emoji: '🪥', name: 'Daily Routine Recall', sub: 'Sequencing memory' },
-  { emoji: '🍃', name: 'Tea Leaf Sorting', sub: 'Visual discrimination' },
+  { emoji: '🎵', name: 'Song Recognition', sub: 'Musical memory & recall' },
+  { emoji: '📖', name: 'Family Memory', sub: 'Reminiscence & storytelling' },
+  { emoji: '🎨', name: 'Color Sort', sub: 'Visual discrimination' },
   { emoji: '🥁', name: 'Rhythm & Tap', sub: 'Auditory & motor timing' },
+  { emoji: '🔷', name: 'Pattern Recognition', sub: 'Attention & focus' },
 ]
 
 const FEATURES = [

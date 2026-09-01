@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import GamePerformanceChart from '../../components/caregiver/GamePerformanceChart.jsx'
+import AIInsightCard from '../../components/caregiver/AIInsightCard.jsx'
+import GameHistoryTable from '../../components/caregiver/GameHistoryTable.jsx'
+import {
+  mockCheckIn,
+  mockPerformanceSummary,
+  mockGamePerformance,
+  mockGameHistory,
+  mockAIInsight,
+} from '../../data/caregiverMockData.js'
 
 const GAME_LABELS = {
   memory_match: 'Memory Match',
@@ -173,6 +183,16 @@ export default function Dashboard() {
           </div>
         )}
 
+        <Panel title="❤️ Today's Check-in — Demo data">
+          <div className="flex items-center gap-4">
+            <span className="text-4xl">{mockCheckIn.emoji}</span>
+            <div>
+              <div className="font-semibold">{mockCheckIn.mood}</div>
+              <div className="text-xs text-ink-faint">{mockCheckIn.time}</div>
+            </div>
+          </div>
+        </Panel>
+
         {perf && (
           <div className="grid sm:grid-cols-4 gap-4">
             <StatCard value={perf.games_completed} label="Games completed" />
@@ -181,6 +201,29 @@ export default function Dashboard() {
             <StatCard value={`${(perf.avg_response_ms / 1000).toFixed(1)}s`} label="Avg response time" />
           </div>
         )}
+
+        <Panel title="📊 Performance Summary — Demo data">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <StatCard value={mockPerformanceSummary.gamesCompleted} label="Games completed" />
+            <StatCard value={`${mockPerformanceSummary.accuracy}%`} label="Accuracy" />
+            <StatCard value={`${mockPerformanceSummary.precision}%`} label="Precision" />
+            <StatCard value={`${mockPerformanceSummary.errorRate}%`} label="Error rate" />
+            <StatCard value={`${mockPerformanceSummary.averageResponseTime}s`} label="Avg response time" />
+            <StatCard value={`${mockPerformanceSummary.overallScore}%`} label="Overall score" />
+          </div>
+        </Panel>
+
+        <Panel title="🎮 Game-wise Performance — Demo data">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+            {mockGamePerformance.map((g) => (
+              <div key={g.game_id} className="bg-primary-tint rounded-xl py-3 text-center">
+                <div className="text-lg font-bold text-primary">{g.accuracy}%</div>
+                <div className="text-xs text-ink-faint mt-1">{g.label}</div>
+              </div>
+            ))}
+          </div>
+          <GamePerformanceChart data={mockGamePerformance} />
+        </Panel>
 
         {perf && perf.trend.length > 0 && (
           <div className="grid sm:grid-cols-2 gap-6">
@@ -228,6 +271,8 @@ export default function Dashboard() {
           )}
         </Panel>
 
+        <AIInsightCard insight={mockAIInsight} />
+
         <Panel title="🎮 Recent game sessions">
           <div className="flex flex-col gap-2">
             {games.length === 0 && <p className="text-sm text-ink-faint">No game sessions recorded yet.</p>}
@@ -238,6 +283,10 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        </Panel>
+
+        <Panel title="📋 Game History — Demo data">
+          <GameHistoryTable entries={mockGameHistory} />
         </Panel>
 
         <Panel title="💊 Medicine">
