@@ -13,6 +13,7 @@ import MemoryMatch from './pages/patient/games/MemoryMatch.jsx'
 import PatternGame from './pages/patient/games/PatternGame.jsx'
 import DailyRoutine from './pages/patient/games/DailyRoutine.jsx'
 import TeaSorting from './pages/patient/games/TeaSorting.jsx'
+import ColorSort from './pages/patient/games/ColorSort.jsx'
 import RhythmTap from './pages/patient/games/RhythmTap.jsx'
 import MusicMemory from './pages/patient/games/MusicMemory.jsx'
 import RememberMyStory from './pages/patient/games/RememberMyStory.jsx'
@@ -42,6 +43,7 @@ export default function App() {
       <Route path="/games/pattern" element={<RequirePatient><PatternGame /></RequirePatient>} />
       <Route path="/games/routine" element={<RequirePatient><DailyRoutine /></RequirePatient>} />
       <Route path="/games/tea-sorting" element={<RequirePatient><TeaSorting /></RequirePatient>} />
+      <Route path="/games/color-sort" element={<RequirePatient><ColorSort /></RequirePatient>} />
       <Route path="/games/rhythm-tap" element={<RequirePatient><RhythmTap /></RequirePatient>} />
       <Route path="/games/music-memory" element={<RequirePatient><MusicMemory /></RequirePatient>} />
       <Route path="/games/remember-my-story" element={<RequirePatient><RememberMyStory /></RequirePatient>} />

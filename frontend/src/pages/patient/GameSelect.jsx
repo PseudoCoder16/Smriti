@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import PatientTopbar from '../../components/PatientTopbar.jsx'
 
 const GAMES = [
-  { to: '/games/memory-match', emoji: '🃏', name: 'Memory Match', desc: 'Flip the cards and find matching pairs.' },
-  { to: '/games/pattern', emoji: '🔷', name: 'Pattern Recognition', desc: 'Watch the sequence, then tap it back.' },
-  { to: '/games/routine', emoji: '🪥', name: 'Daily Routine Recall', desc: "Arrange the day's activities in order." },
-  { to: '/games/tea-sorting', emoji: '🍃', name: 'Tea Leaf Sorting', desc: 'Sort fresh green leaves from dry brown ones.' },
+  { to: '/games/music-memory', emoji: '🎵', name: 'Song Recognition', desc: 'Listen and say if the music feels familiar.' },
+  { to: '/games/remember-my-story', emoji: '📖', name: 'Family Memory', desc: 'Gentle prompts to share a memory or story.' },
+  { to: '/games/color-sort', emoji: '🎨', name: 'Color Sort', desc: 'Tap the jar that matches each colored ball.' },
   { to: '/games/rhythm-tap', emoji: '🥁', name: 'Rhythm & Tap', desc: 'Tap along to the folk drum beat.' },
+  { to: '/games/pattern', emoji: '🔷', name: 'Pattern Recognition', desc: 'Watch the sequence, then tap it back.' },
 ]
 
 export default function GameSelect() {

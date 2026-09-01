@@ -48,27 +48,29 @@ export const REMINISCENCE_CARDS = {
 }
 
 // ---------------- Music & Memory — track metadata ----------------
-// audioSrc points to a file that does not exist yet in this repo — see
-// frontend/public/audio/README.md for exactly which files to drop in.
+// audioSrc points to files that don't exist yet in this repo — see
+// frontend/public/songs/README.md for exactly which files to drop in.
+// The Song Recognition game shows a friendly "audio coming soon" fallback
+// until each file exists, so missing audio never blocks the game.
 export const MUSIC_TRACKS = {
   en: [
-    { title: 'Folk melody 1', audioSrc: '/audio/music-memory/en/1.mp3' },
-    { title: 'Folk melody 2', audioSrc: '/audio/music-memory/en/2.mp3' },
-    { title: 'Folk melody 3', audioSrc: '/audio/music-memory/en/3.mp3' },
+    { title: 'Folk melody 1', audioSrc: '/songs/general/1.mp3' },
+    { title: 'Folk melody 2', audioSrc: '/songs/general/2.mp3' },
+    { title: 'Folk melody 3', audioSrc: '/songs/general/3.mp3' },
   ],
   as: [
-    { title: 'Assamese Bihu song 1', audioSrc: '/audio/music-memory/as/1.mp3' },
-    { title: 'Assamese Bihu song 2', audioSrc: '/audio/music-memory/as/2.mp3' },
-    { title: 'Assamese folk song 3', audioSrc: '/audio/music-memory/as/3.mp3' },
+    { title: 'Assamese Bihu song 1', audioSrc: '/songs/assamese/1.mp3' },
+    { title: 'Assamese Bihu song 2', audioSrc: '/songs/assamese/2.mp3' },
+    { title: 'Assamese folk song 3', audioSrc: '/songs/assamese/3.mp3' },
   ],
   mni: [
-    { title: 'Manipuri folk song 1', audioSrc: '/audio/music-memory/mni/1.mp3' },
-    { title: 'Manipuri folk song 2', audioSrc: '/audio/music-memory/mni/2.mp3' },
-    { title: 'Manipuri folk song 3', audioSrc: '/audio/music-memory/mni/3.mp3' },
+    { title: 'Manipuri folk song 1', audioSrc: '/songs/manipuri/1.mp3' },
+    { title: 'Manipuri folk song 2', audioSrc: '/songs/manipuri/2.mp3' },
+    { title: 'Manipuri folk song 3', audioSrc: '/songs/manipuri/3.mp3' },
   ],
   mz: [
-    { title: 'Mizo hla 1', audioSrc: '/audio/music-memory/mz/1.mp3' },
-    { title: 'Mizo hla 2', audioSrc: '/audio/music-memory/mz/2.mp3' },
-    { title: 'Mizo hla 3', audioSrc: '/audio/music-memory/mz/3.mp3' },
+    { title: 'Mizo hla 1', audioSrc: '/songs/mizo/1.mp3' },
+    { title: 'Mizo hla 2', audioSrc: '/songs/mizo/2.mp3' },
+    { title: 'Mizo hla 3', audioSrc: '/songs/mizo/3.mp3' },
   ],
 }
